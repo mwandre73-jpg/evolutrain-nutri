@@ -40,17 +40,12 @@ export default async function Home() {
           <div className="mx-auto max-w-7xl text-center lg:text-left">
             <div className="animate-slide-up grid lg:grid-cols-2 lg:items-center lg:gap-12">
               <div>
-                <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl">
-                  Transforme seu{" "}
-                  <span className="text-gradient">
-                    Potencial
-                  </span>{" "}
-                  em Resultados
+                <h1 className="mb-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
+                  <span className="text-gradient">Performance</span> Física e <br />
+                  <span className="text-white">Evolução</span> Nutricional
                 </h1>
-                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foreground/70 sm:text-xl">
-                  A plataforma definitiva para nutrição e evolução contínua.
-                  Gerencie seus planos alimentares, acompanhe sua composição corporal e alcance
-                  seus objetivos com a EvoluNutri.
+                <p className="mx-auto mb-10 max-w-2xl text-lg text-zinc-400 sm:text-xl">
+                  A plataforma completa que une prescrição de treinamento de alto nível com gestão nutricional clínica de precisão.
                 </p>
                 <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">
                   <a
@@ -99,17 +94,29 @@ export default async function Home() {
           <div className="mx-auto max-w-7xl">
             <h2 className="mb-12 text-center text-3xl font-bold">Por que escolher EvoluNutri?</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                { title: "Dieta Dinâmica", desc: "Planos adaptados ao seu metabolismo e objetivos.", icon: "🥗" },
-                { title: "Gestão de Pacientes", desc: "Acompanhe cada etapa da evolução nutricional em um só lugar.", icon: "📊" },
-                { title: "Mobile First", desc: "Acesse sua dieta onde e quando quiser, de qualquer dispositivo.", icon: "📱" }
-              ].map((feature, i) => (
-                <div key={i} className="rounded-3xl bg-background p-8 shadow-sm transition-all hover:shadow-md ring-1 ring-foreground/5">
-                  <div className="mb-4 text-4xl">{feature.icon}</div>
-                  <h3 className="mb-2 text-xl font-bold">{feature.title}</h3>
-                  <p className="text-foreground/60">{feature.desc}</p>
+              <div className="flex items-start gap-4 rounded-3xl bg-white p-8 shadow-xl shadow-zinc-200/50 dark:bg-zinc-900 dark:shadow-none">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl premium-gradient text-2xl text-white">
+                  🥗
                 </div>
-              ))}
+                <div className="flex-1">
+                  <h3 className="mb-2 text-xl font-bold">Gestão Nutricional</h3>
+                  <p className="text-zinc-600 dark:text-zinc-400">
+                    Planos alimentares personalizados e acompanhamento de bioimpedância detalhado.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 rounded-3xl bg-white p-8 shadow-xl shadow-zinc-200/50 dark:bg-zinc-900 dark:shadow-none">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl premium-gradient text-2xl text-white">
+                  🏃
+                </div>
+                <div className="flex-1">
+                  <h3 className="mb-2 text-xl font-bold">Planilhas de Treino</h3>
+                  <p className="text-zinc-600 dark:text-zinc-400">
+                    Prescrição de treinamento de força e endurance com zonas de intensidade automáticas.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -131,4 +138,3 @@ export default async function Home() {
     </div>
   );
 }
-

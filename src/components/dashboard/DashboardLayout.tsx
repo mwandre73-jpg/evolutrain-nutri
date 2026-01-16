@@ -22,20 +22,44 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         );
     }
 
-    const menuItems = session?.user?.role === "COACH"
+    const menuSections = session?.user?.role === "COACH"
         ? [
-            { name: "Painel Nutricionista", href: "/dashboard", icon: "📊" },
-            { name: "Pacientes", href: "/dashboard/alunos", icon: "👥" },
-            { name: "Planos Alimentares", href: "/dashboard/planilhas", icon: "🍎" },
-            { name: "Avaliações", href: "/dashboard/testes", icon: "📋" },
-            ...(session?.user?.email === 'nutricionista@evolunutri.com.br' ? [{ name: "Administração", href: "/dashboard/admin", icon: "⚙️" }] : []),
-            { name: "Perfil", href: "/dashboard/perfil", icon: "👤" },
+            {
+                title: "TREINAMENTO",
+                items: [
+                    { name: "Painel Treinador", href: "/dashboard", icon: "📊" },
+                    { name: "Alunos", href: "/dashboard/alunos", icon: "👥" },
+                    { name: "Planilhas", href: "/dashboard/planilhas", icon: "📝" },
+                    { name: "Testes", href: "/dashboard/testes", icon: "🧪" },
+                ]
+            },
+            {
+                title: "NUTRIÇÃO",
+                items: [
+                    { name: "Pacientes", href: "/dashboard/nutri/pacientes", icon: "🍎" },
+                    { name: "Planos Alimentares", href: "/dashboard/nutri/dietas", icon: "🍱" },
+                    { name: "Avaliações", href: "/dashboard/nutri/avaliacoes", icon: "📏" },
+                ]
+            },
+            {
+                title: "SISTEMA",
+                items: [
+                    ...(session?.user?.email === 'nutricionista@evolunutri.com.br' ? [{ name: "Administração", href: "/dashboard/admin", icon: "⚙️" }] : []),
+                    { name: "Perfil", href: "/dashboard/perfil", icon: "👤" },
+                ]
+            }
         ]
         : [
-            { name: "Meu Painel", href: "/dashboard", icon: "🏠" },
-            { name: "Minha Dieta", href: "/dashboard/treinos", icon: "🍱" },
-            { name: "Minha Evolução", href: "/dashboard/evolucao", icon: "📈" },
-            { name: "Meu Perfil", href: "/dashboard/perfil", icon: "👤" },
+            {
+                title: "MENU",
+                items: [
+                    { name: "Meu Painel", href: "/dashboard", icon: "🏠" },
+                    { name: "Minha Dieta", href: "/dashboard/nutri/dietas", icon: "🍱" },
+                    { name: "Meu Treino", href: "/dashboard/treinos", icon: "🏃" },
+                    { name: "Minha Evolução", href: "/dashboard/evolucao", icon: "📈" },
+                    { name: "Meu Perfil", href: "/dashboard/perfil", icon: "👤" },
+                ]
+            }
         ];
 
     return (
@@ -55,24 +79,33 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         </span>
                     </div>
 
-                    <nav className="flex-1 space-y-1 px-4">
-                        {menuItems.map((item) => {
-                            const isActive = pathname === item.href;
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setSidebarOpen(false)}
-                                    className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${isActive
-                                        ? "premium-gradient text-white shadow-lg shadow-brand-primary/20"
-                                        : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
-                                        }`}
-                                >
-                                    <span className="text-lg">{item.icon}</span>
-                                    {item.name}
-                                </Link>
-                            );
-                        })}
+                    <nav className="flex-1 space-y-6 px-4 overflow-y-auto">
+                        {menuSections.map((section) => (
+                            <div key={section.title} className="space-y-1">
+                                <h3 className="px-4 text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
+                                    {section.title}
+                                </h3>
+                                <div className="space-y-1">
+                                    {section.items.map((item) => {
+                                        const isActive = pathname === item.href;
+                                        return (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                onClick={() => setSidebarOpen(false)}
+                                                className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${isActive
+                                                    ? "premium-gradient text-white shadow-lg shadow-brand-primary/20"
+                                                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+                                                    }`}
+                                            >
+                                                <span className="text-lg">{item.icon}</span>
+                                                {item.name}
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
                     </nav>
 
                     <div className="border-t border-zinc-100 p-4 dark:border-zinc-800">
