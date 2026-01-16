@@ -18,7 +18,7 @@ export default function AdminPage() {
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     useEffect(() => {
-        if (status === "unauthenticated" || (session?.user?.email !== 'treinador@evolutrain.com')) {
+        if (status === "unauthenticated" || (session?.user?.email !== 'nutricionista@evolunutri.com.br')) {
             router.push("/dashboard");
             return;
         }
@@ -29,7 +29,7 @@ export default function AdminPage() {
             setLoading(false);
         };
 
-        if (session?.user?.email === 'treinador@evolutrain.com') {
+        if (session?.user?.email === 'nutricionista@evolunutri.com.br') {
             load();
         }
     }, [session, status, router]);
@@ -86,7 +86,7 @@ export default function AdminPage() {
                             Painel <span className="text-gradient">Administrativo</span>
                         </h1>
                         <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                            Gestão de treinadores da plataforma Evolutrain.
+                            Gestão de nutricionistas da plataforma EvoluNutri.
                         </p>
                     </div>
                     <button
@@ -132,7 +132,7 @@ export default function AdminPage() {
                                                     <ShieldCheck size={12} />
                                                     Ativo
                                                 </span>
-                                                {coach.email !== 'treinador@evolutrain.com' && (
+                                                {coach.email !== 'nutricionista@evolunutri.com.br' && (
                                                     <button
                                                         onClick={() => handleDeleteCoach(coach.id, coach.name)}
                                                         className="text-zinc-400 hover:text-red-500 transition-colors p-1"

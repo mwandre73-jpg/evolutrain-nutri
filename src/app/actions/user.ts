@@ -94,7 +94,7 @@ export async function updatePasswordAction(formData: FormData) {
 export async function getAllCoachesAction() {
     try {
         const session = await getServerSession(authOptions);
-        if (!session || session.user.email !== 'treinador@evolutrain.com') {
+        if (!session || session.user.email !== 'nutricionista@evolunutri.com.br') {
             throw new Error("Unauthorized");
         }
 
@@ -120,7 +120,7 @@ export async function createCoachAction(name: string, email: string) {
         const session = await getServerSession(authOptions);
 
         // Proteção estrita: apenas o Marcio pode criar outros treinadores
-        if (!session || session.user.email !== 'treinador@evolutrain.com') {
+        if (!session || session.user.email !== 'nutricionista@evolunutri.com.br') {
             throw new Error("Unauthorized");
         }
 
@@ -158,12 +158,12 @@ export async function createCoachAction(name: string, email: string) {
 export async function deleteCoachAction(coachId: string) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session || session.user.email !== 'treinador@evolutrain.com') {
+        if (!session || session.user.email !== 'nutricionista@evolunutri.com.br') {
             throw new Error("Unauthorized");
         }
 
         const adminUser = await prisma.user.findUnique({
-            where: { email: 'treinador@evolutrain.com' }
+            where: { email: 'nutricionista@evolunutri.com.br' }
         });
 
         if (adminUser?.id === coachId) {

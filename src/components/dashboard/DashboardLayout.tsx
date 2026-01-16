@@ -24,16 +24,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
     const menuItems = session?.user?.role === "COACH"
         ? [
-            { name: "Painel Treinador", href: "/dashboard", icon: "📊" },
-            { name: "Alunos", href: "/dashboard/alunos", icon: "👥" },
-            { name: "Planilhas", href: "/dashboard/planilhas", icon: "📝" },
-            { name: "Testes", href: "/dashboard/testes", icon: "🧪" },
-            ...(session?.user?.email === 'treinador@evolutrain.com' ? [{ name: "Administração", href: "/dashboard/admin", icon: "⚙️" }] : []),
+            { name: "Painel Nutricionista", href: "/dashboard", icon: "📊" },
+            { name: "Pacientes", href: "/dashboard/alunos", icon: "👥" },
+            { name: "Planos Alimentares", href: "/dashboard/planilhas", icon: "🍎" },
+            { name: "Avaliações", href: "/dashboard/testes", icon: "📋" },
+            ...(session?.user?.email === 'nutricionista@evolunutri.com.br' ? [{ name: "Administração", href: "/dashboard/admin", icon: "⚙️" }] : []),
             { name: "Perfil", href: "/dashboard/perfil", icon: "👤" },
         ]
         : [
             { name: "Meu Painel", href: "/dashboard", icon: "🏠" },
-            { name: "Meus Treinos", href: "/dashboard/treinos", icon: "⚡" },
+            { name: "Minha Dieta", href: "/dashboard/treinos", icon: "🍱" },
             { name: "Minha Evolução", href: "/dashboard/evolucao", icon: "📈" },
             { name: "Meu Perfil", href: "/dashboard/perfil", icon: "👤" },
         ];
@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                             E
                         </div>
                         <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                            Evolutrain
+                            EvoluNutri
                         </span>
                     </div>
 
@@ -114,7 +114,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg premium-gradient text-white font-bold">
                             E
                         </div>
-                        <span className="text-lg font-bold tracking-tight">Evolutrain</span>
+                        <span className="text-lg font-bold tracking-tight">EvoluNutri</span>
                     </div>
                     <button
                         onClick={() => setSidebarOpen(!isSidebarOpen)}

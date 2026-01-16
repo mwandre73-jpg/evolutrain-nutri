@@ -15,12 +15,12 @@ export const authOptions: NextAuthOptions = {
             async authorize(credentials) {
 
                 const staticAllowed = [
-                    "admin@evolutrain.com",
+                    "admin@evolunutri.com.br",
                     "admin@lab.com",
-                    "treinador@evolutrain.com",
-                    "aluno1@evolutrain.com",
-                    "aluno2@evolutrain.com",
-                    "aluno3@evolutrain.com"
+                    "nutricionista@evolunutri.com.br",
+                    "aluno1@evolunutri.com.br",
+                    "aluno2@evolunutri.com.br",
+                    "aluno3@evolunutri.com.br"
                 ];
 
                 if (credentials?.email && credentials?.password) {
@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
                     if (staticAllowed.includes(email)) {
                         const role = (email.startsWith("aluno") || email.includes("athlete")) ? "ATHLETE" : "COACH";
                         return {
-                            id: email === "treinador@evolutrain.com" ? "user_coach_marcio" : "athlete_1",
+                            id: email === "nutricionista@evolunutri.com.br" ? "user_nutri_marcio" : "patient_1",
                             name: role === "COACH" ? "Treinador Admin" : "Aluno Exemplo",
                             email: email,
                             role: role

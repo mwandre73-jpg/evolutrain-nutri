@@ -1,8 +1,7 @@
-
 {
-  "name": "Plataforma Evolutrain",
-  "short_name": "Evolutrain",
-  "description": "Plataforma Evolutrain - Gestão e Treinamento",
+  "name": "EvoluNutri",
+  "short_name": "EvoluNutri",
+  "description": "EvoluNutri - Gestão e Evolução Nutricional",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

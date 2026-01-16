@@ -88,7 +88,7 @@ export default function AcceptInvitePage() {
                             <div className="text-center">
                                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">Convite Especial</h2>
                                 <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                                    Seu treinador convidou você para fazer parte da assessoria na Evolutrain.
+                                    Seu nutricionista convidou você para fazer parte da assessoria na EvoluNutri.
                                 </p>
                             </div>
 
@@ -128,7 +128,7 @@ export default function AcceptInvitePage() {
                 </div>
 
                 <p className="mt-8 text-center text-sm text-zinc-500">
-                    © 2025 Evolutrain. Todos os direitos reservados.
+                    © 2026 EvoluNutri. Todos os direitos reservados.
                 </p>
             </div>
         </div>

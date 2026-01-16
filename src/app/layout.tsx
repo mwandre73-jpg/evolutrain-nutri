@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
-  title: "Evolutrain - Transforme seu Potencial",
-  description: "A plataforma definitiva para treinamento e evolução contínua.",
+  title: "EvoluNutri - Sua Evolução Nutricional",
+  description: "A plataforma definitiva para nutrição e bem-estar.",
 };
 
 export default function RootLayout({

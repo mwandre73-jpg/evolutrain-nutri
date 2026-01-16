@@ -433,7 +433,7 @@ export default function AlunosPage() {
                                 <div className="flex gap-3">
                                     <button
                                         onClick={() => {
-                                            const message = `Olá ${inviteName}! Aqui está seu link de acesso para a Evolutrain: ${generatedLink}`;
+                                            const message = `Olá ${inviteName}! Aqui está seu link de acesso para a EvoluNutri: ${generatedLink}`;
                                             window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
                                         }}
                                         className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[#25D366] py-3 text-sm font-bold text-white transition-all hover:bg-opacity-90"
@@ -442,7 +442,7 @@ export default function AlunosPage() {
                                     </button>
                                     <button
                                         onClick={() => {
-                                            window.location.href = `mailto:${inviteEmail}?subject=Convite Evolutrain&body=Olá ${inviteName}! Acesse a Evolutrain pelo link: ${generatedLink}`;
+                                            window.location.href = `mailto:${inviteEmail}?subject=Convite EvoluNutri&body=Olá ${inviteName}! Acesse a EvoluNutri pelo link: ${generatedLink}`;
                                         }}
                                         className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-zinc-900 py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
                                     >

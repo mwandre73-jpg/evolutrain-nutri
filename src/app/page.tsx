@@ -16,12 +16,7 @@ export default async function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 z-50 w-full glass-morphism">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg premium-gradient text-white font-bold">
-              E
-            </div>
-            <span className="text-xl font-bold tracking-tight">Evolutrain</span>
-          </div>
+          <span className="text-xl font-bold tracking-tight">EvoluNutri</span>
           <div className="flex items-center gap-6">
             <a href="/api/auth/signin?callbackUrl=/dashboard" className="text-sm font-medium text-zinc-600 transition-colors hover:text-black dark:text-zinc-400 dark:hover:text-white">
               Entrar
@@ -53,9 +48,9 @@ export default async function Home() {
                   em Resultados
                 </h1>
                 <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foreground/70 sm:text-xl">
-                  A plataforma definitiva para treinamento e evolução contínua.
-                  Gerencie seu aprendizado, acompanhe seu progresso e alcance
-                  seus objetivos com a Evolutrain.
+                  A plataforma definitiva para nutrição e evolução contínua.
+                  Gerencie seus planos alimentares, acompanhe sua composição corporal e alcance
+                  seus objetivos com a EvoluNutri.
                 </p>
                 <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">
                   <a
@@ -78,7 +73,7 @@ export default async function Home() {
                   <div className="h-8 w-px bg-foreground/10" />
                   <div>
                     <p className="text-2xl font-bold">500+</p>
-                    <p className="text-sm text-foreground/50 text-nowrap">Cursos e Trilhas</p>
+                    <p className="text-sm text-foreground/50 text-nowrap">Planos e Dietas</p>
                   </div>
                 </div>
               </div>
@@ -102,12 +97,12 @@ export default async function Home() {
         {/* Features Preview (Mobile First Grid) */}
         <section className="bg-foreground/[0.02] py-20 px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <h2 className="mb-12 text-center text-3xl font-bold">Por que escolher Evolutrain?</h2>
+            <h2 className="mb-12 text-center text-3xl font-bold">Por que escolher EvoluNutri?</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                { title: "Treino Dinâmico", desc: "Aulas adaptadas ao seu ritmo de evolução.", icon: "⚡" },
-                { title: "Gestão Integrada", desc: "Acompanhe cada etapa da sua jornada em um só lugar.", icon: "📊" },
-                { title: "Mobile First", desc: "Estude e treine onde e quando quiser, de qualquer dispositivo.", icon: "📱" }
+                { title: "Dieta Dinâmica", desc: "Planos adaptados ao seu metabolismo e objetivos.", icon: "🥗" },
+                { title: "Gestão de Pacientes", desc: "Acompanhe cada etapa da evolução nutricional em um só lugar.", icon: "📊" },
+                { title: "Mobile First", desc: "Acesse sua dieta onde e quando quiser, de qualquer dispositivo.", icon: "📱" }
               ].map((feature, i) => (
                 <div key={i} className="rounded-3xl bg-background p-8 shadow-sm transition-all hover:shadow-md ring-1 ring-foreground/5">
                   <div className="mb-4 text-4xl">{feature.icon}</div>
@@ -126,10 +121,10 @@ export default async function Home() {
             <div className="flex h-6 w-6 items-center justify-center rounded premium-gradient text-[10px] text-white font-bold">
               E
             </div>
-            <span className="font-bold">Evolutrain</span>
+            <span className="font-bold">EvoluNutri</span>
           </div>
           <p className="text-sm text-foreground/40">
-            © 2025 Evolutrain. Todos os direitos reservados.
+            © 2026 EvoluNutri. Todos os direitos reservados.
           </p>
         </div>
       </footer>

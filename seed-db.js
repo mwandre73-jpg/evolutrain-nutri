@@ -4,24 +4,24 @@ const prisma = new PrismaClient();
 async function main() {
     console.log('Iniciando seed...');
 
-    // 1. Criar Treinador
+    // 1. Criar Nutricionista Admin
     const coach = await prisma.user.upsert({
-        where: { email: 'treinador@evolutrain.com' },
+        where: { email: 'nutricionista@evolunutri.com.br' },
         update: {},
         create: {
-            id: 'coach_1', // Mantendo o ID do modo de teste do NextAuth
-            email: 'treinador@evolutrain.com',
-            name: 'Treinador Admin',
+            id: 'user_nutri_marcio',
+            email: 'nutricionista@evolunutri.com.br',
+            name: 'Nutricionista Admin',
             role: 'COACH',
         },
     });
-    console.log('Treinador criado/verificado:', coach.email);
+    console.log('Nutricionista criado/verificado:', coach.email);
 
     // 2. Criar Alunos/Atletas
     const studentsRaw = [
-        { id: 'athlete_1', email: 'aluno1@evolutrain.com', name: 'João Silva' },
-        { id: 'athlete_2', email: 'aluno2@evolutrain.com', name: 'Maria Oliveira' },
-        { id: 'athlete_3', email: 'aluno3@evolutrain.com', name: 'Carlos Santos' },
+        { id: 'athlete_1', email: 'aluno1@evolunutri.com.br', name: 'João Silva' },
+        { id: 'athlete_2', email: 'aluno2@evolunutri.com.br', name: 'Maria Oliveira' },
+        { id: 'athlete_3', email: 'aluno3@evolunutri.com.br', name: 'Carlos Santos' },
     ];
 
     for (const s of studentsRaw) {
