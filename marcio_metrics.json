@@ -1,0 +1,101 @@
+[
+  {
+    "id": "1e1e887a-98cc-4674-8d4a-40d827047cae",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2025-12-30T09:34:08.000Z",
+    "category": "RACE",
+    "testType": "STRAVA_IMPORT",
+    "exercise": "Morning Run",
+    "rawResult": 788,
+    "calculatedVo2": 0,
+    "calculatedVmax": 11.7396
+  },
+  {
+    "id": "21b0cc14-1595-4bdf-835f-2a4e08f7cd70",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2025-12-07T12:30:41.000Z",
+    "category": "RACE",
+    "testType": "STRAVA_IMPORT",
+    "exercise": "Lunch Run",
+    "rawResult": 812,
+    "calculatedVo2": 0,
+    "calculatedVmax": 8.935200000000002
+  },
+  {
+    "id": "a10a6960-d7f2-42fd-9d3b-e1b29ed6f4b4",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2025-12-10T17:53:48.000Z",
+    "category": "RACE",
+    "testType": "STRAVA_IMPORT",
+    "exercise": "Afternoon Run",
+    "rawResult": 1466,
+    "calculatedVo2": 0,
+    "calculatedVmax": 5.8356
+  },
+  {
+    "id": "ae28704c-b6de-4e7d-979d-c5df292edfe8",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2025-12-14T10:20:30.000Z",
+    "category": "RACE",
+    "testType": "STRAVA_IMPORT",
+    "exercise": "Morning Run",
+    "rawResult": 902,
+    "calculatedVo2": 0,
+    "calculatedVmax": 7.880400000000001
+  },
+  {
+    "id": "c1ff4595-5132-432f-ab0e-83866586ed7f",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2025-12-26T10:30:14.000Z",
+    "category": "RACE",
+    "testType": "STRAVA_IMPORT",
+    "exercise": "Morning Run",
+    "rawResult": 706,
+    "calculatedVo2": 0,
+    "calculatedVmax": 12.042
+  },
+  {
+    "id": "dec4f311-3aee-467d-8db3-2459f0f300b5",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2025-12-21T11:23:56.000Z",
+    "category": "RACE",
+    "testType": "STRAVA_IMPORT",
+    "exercise": "Lunch Run",
+    "rawResult": 683,
+    "calculatedVo2": 0,
+    "calculatedVmax": 9.072000000000001
+  },
+  {
+    "id": "metric_1767282153073",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2026-01-01T15:42:33.076Z",
+    "category": "AEROBIC",
+    "testType": "esforco",
+    "exercise": "",
+    "rawResult": 14,
+    "calculatedVo2": 56.04,
+    "calculatedVmax": 15.7
+  },
+  {
+    "id": "metric_1767354253082",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2026-01-02T11:44:13.086Z",
+    "category": "SPEED",
+    "testType": "speed",
+    "exercise": "60m",
+    "rawResult": 8.5,
+    "calculatedVo2": null,
+    "calculatedVmax": null
+  },
+  {
+    "id": "metric_1767366867860",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2026-01-02T15:14:27.862Z",
+    "category": "AEROBIC",
+    "testType": "cooper",
+    "exercise": "",
+    "rawResult": 3300,
+    "calculatedVo2": 62.49,
+    "calculatedVmax": 17.5
+  }
+]

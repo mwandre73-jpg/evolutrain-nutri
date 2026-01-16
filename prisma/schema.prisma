@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
+
+  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
+  @@index([userId], map: "Account_userId_fkey")
+  @@map("account")
+}
+
+model AthleteProfile {
+  id           String           @id
+  userId       String?          @unique(map: "AthleteProfile_userId_key")
+  coachId      String
+  peso         Float?
+  altura       Float?
+  idade        Int?
+  gender       String?
+  dataNascimento DateTime?
+  weeklyRunningGoal Float @default(45)
+  weeklyStrengthGoal Int @default(3)
+  coach        User             @relation("athleteprofile_coachIdTouser", fields: [coachId], references: [id], map: "AthleteProfile_coachId_fkey")
+  user         User?            @relation("athleteprofile_userIdTouser", fields: [userId], references: [id], onDelete: Cascade, map: "AthleteProfile_userId_fkey")
+  metrics      FitnessMetrics[]
+  integrations Integrations[]
+  invitations  Invitation[]
+  workouts     Workouts[]
+  anamnesis    Anamnesis[]
+
+  @@index([coachId], map: "AthleteProfile_coachId_fkey")
+  @@map("athleteprofile")
+}
+
+model FitnessMetrics {
+  id               String         @id
+  athleteProfileId String
+  date             DateTime       @default(now())
+  category         String         @default("AEROBIC")
+  testType         String
+  exercise         String?
+  rawResult        Float
+  calculatedVo2    Float?
+  calculatedVmax   Float?
+  athlete          AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade, map: "FitnessMetrics_athleteProfileId_fkey")
+
+  @@index([athleteProfileId], map: "FitnessMetrics_athleteProfileId_fkey")
+  @@map("fitnessmetrics")
+}
+
+model Integrations {
+  id               String         @id
+  athleteProfileId String
+  type             String
+  accessToken      String         @db.Text
+  refreshToken     String         @db.Text
+  expiresAt        DateTime
+  athlete          AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade, map: "Integrations_athleteProfileId_fkey")
+
+  @@index([athleteProfileId], map: "Integrations_athleteProfileId_fkey")
+  @@map("integrations")
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique(map: "Session_sessionToken_key")
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
+
+  @@index([userId], map: "Session_userId_fkey")
+  @@map("session")
+}
+
+model User {
+  id              String           @id
+  name            String?
+  email           String?          @unique(map: "User_email_key")
+  emailVerified   DateTime?
+  image           String?
+  password        String?
+  role            UserRole         @default(ATHLETE)
+  account         Account[]
+  coachedAthletes AthleteProfile[] @relation("athleteprofile_coachIdTouser")
+  athleteProfile  AthleteProfile?  @relation("athleteprofile_userIdTouser")
+  invitations     Invitation[]     @relation("coach_invitations")
+  session         Session[]
+  workoutTemplates WorkoutTemplate[] @relation("coach_templates")
+
+  @@map("user")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique(map: "VerificationToken_token_key")
+  expires    DateTime
+
+  @@unique([identifier, token], map: "VerificationToken_identifier_token_key")
+  @@map("verificationtoken")
+}
+
+model Workouts {
+  id                  String         @id
+  athleteProfileId    String
+  date                DateTime
+  type                String
+  description         String         @db.Text
+  prescribedIntensity String
+  calculatedZones     String?        @db.LongText
+  completed           Boolean        @default(false)
+  feedbackPerception  Int?           // Percepção subjetiva de esforço (0-10)
+  feedbackText        String?        @db.Text
+  feedbackRead        Boolean        @default(false)
+  athlete             AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade, map: "Workouts_athleteProfileId_fkey")
+
+  @@index([athleteProfileId], map: "Workouts_athleteProfileId_fkey")
+  @@map("workouts")
+}
+
+model Invitation {
+  id               String         @id @default(uuid())
+  coachId          String
+  name             String
+  email            String?
+  token            String         @unique
+  status           String         @default("PENDING")
+  createdAt        DateTime       @default(now())
+  athleteProfileId String
+  athlete          AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade)
+  coach            User           @relation("coach_invitations", fields: [coachId], references: [id])
+
+  @@index([coachId])
+  @@index([athleteProfileId])
+  @@map("invitations")
+}
+
+model Anamnesis {
+  id               String         @id @default(uuid())
+  athleteProfileId String
+  date             DateTime       @default(now())
+  
+  // Basic info
+  weight           Float
+  height           Float
+  
+  // Circumferences (cm)
+  chest            Float?
+  waist            Float?
+  abdomen          Float?
+  hip              Float?
+  armR             Float?
+  armL             Float?
+  forearmR         Float?
+  forearmL         Float?
+  thighR           Float?
+  thighL           Float?
+  calfR            Float?
+  calfL            Float?
+  
+  // Skinfolds (mm)
+  triceps          Float?
+  subscapular      Float?
+  chest_fold       Float?
+  axilla           Float?
+  suprailiac       Float?
+  abdominal_fold   Float?
+  thigh_fold       Float?
+  
+  // Calculated
+  bmi              Float?
+  bodyFat          Float?
+  method           String?         // "POLLOCK_3" or "POLLOCK_7"
+  
+  athlete          AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade)
+
+  @@index([athleteProfileId])
+  @@map("anamnesis")
+}
+
+model WorkoutTemplate {
+  id                  String   @id @default(uuid())
+  coachId             String
+  name                String
+  type                String
+  description         String   @db.Text
+  prescribedIntensity String
+  category            String?  @default("GENERAL")
+  createdAt           DateTime @default(now())
+  coach               User     @relation("coach_templates", fields: [coachId], references: [id])
+  
+  @@index([coachId])
+  @@map("workouttemplate")
+}
+
+enum UserRole {
+  COACH
+  ATHLETE
+
+  @@map("user_role")
+}

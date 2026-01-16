@@ -1,0 +1,13 @@
+[
+  {
+    "id": "547712fa-9901-4e81-a0b3-14a89e49580c",
+    "athleteProfileId": "athlete_1767281669723",
+    "date": "2026-01-04T11:48:12.000Z",
+    "category": "RACE",
+    "testType": "STRAVA_IMPORT",
+    "exercise": "Lunch Run (2.12 km)",
+    "rawResult": 1146,
+    "calculatedVo2": 0,
+    "calculatedVmax": 6.6672
+  }
+]
