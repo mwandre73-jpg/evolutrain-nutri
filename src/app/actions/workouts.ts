@@ -119,7 +119,7 @@ export async function saveWorkoutAction(data: {
                     // 2. Fallback para heurística Superior/Inferior
                     if (!loadRef) {
                         const isSuperiores = individualizedIntensity.toLowerCase().includes('superior') ||
-                            (exerciseHint && ['supino', 'ombro', 'triceps', 'peito', 'costas'].some(h => exerciseHint.toLowerCase().includes(h)));
+                            (exerciseHint && ['supino', 'ombro', 'triceps', 'peito', 'costas'].some((h: any) => exerciseHint.toLowerCase().includes(h)));
                         const refType = isSuperiores ? 'supino' : 'agachamento';
                         const refMetric = athlete.metrics.find((m: any) => m.exercise?.toLowerCase().includes(refType));
                         if (refMetric) loadRef = refMetric.rawResult;
@@ -196,7 +196,7 @@ export async function getWorkoutsAction() {
             orderBy: { date: 'desc' }
         });
 
-        return workouts.map(w => ({
+        return workouts.map((w: any) => ({
             id: w.id,
             date: new Date(w.date).toLocaleDateString('pt-BR'),
             athleteName: (w.athlete as any)?.user?.name || "Atleta",
@@ -223,7 +223,7 @@ export async function getCoachSelfWorkoutsAction() {
             take: 10
         });
 
-        return workouts.map(w => ({
+        return workouts.map((w: any) => ({
             id: w.id,
             date: new Date(w.date).toLocaleDateString('pt-BR'),
             type: w.type,
@@ -543,7 +543,7 @@ export async function checkAthletesWorkoutsAction(date: string) {
             select: { athleteProfileId: true }
         });
 
-        const distinctIds = Array.from(new Set(workouts.map(w => w.athleteProfileId)));
+        const distinctIds = Array.from(new Set(workouts.map((w: any) => w.athleteProfileId)));
         return { success: true, prescribedIds: distinctIds };
     } catch (error) {
         console.error("Error checking workouts:", error);

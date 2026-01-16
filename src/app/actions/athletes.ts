@@ -106,7 +106,7 @@ export async function getAthletes() {
             }
         });
 
-        return athletes.map(a => ({
+        return athletes.map((a: any) => ({
             id: a.id,
             name: a.user?.name || "Sem Nome"
         }));
@@ -405,7 +405,7 @@ export async function getStudentProfileAction(startDate?: string, endDate?: stri
                 isPast: todayWorkout.date < today,
                 isFuture: todayWorkout.date >= tomorrow
             } : null,
-            recentRaces: recentRaces.map(r => ({
+            recentRaces: recentRaces.map((r: any) => ({
                 id: r.id,
                 name: r.exercise,
                 exercise: r.exercise,
@@ -440,7 +440,7 @@ export async function getStudentWorkoutsAction() {
             orderBy: { date: 'desc' }
         });
 
-        return workouts.map(w => ({
+        return workouts.map((w: any) => ({
             id: w.id,
             date: w.date.toLocaleDateString('pt-BR'),
             type: w.type,
@@ -470,8 +470,8 @@ export async function getAthleteEvolutionAction() {
         if (!athlete) return { vo2History: [], weightHistory: [] };
 
         const vo2History = athlete.metrics
-            .filter(m => m.category === 'AEROBIC' && m.calculatedVo2)
-            .map(m => ({
+            .filter((m: any) => m.category === 'AEROBIC' && m.calculatedVo2)
+            .map((m: any) => ({
                 date: new Date(m.date).toLocaleDateString('pt-BR'),
                 vo2: m.calculatedVo2,
                 vmax: m.calculatedVmax,
@@ -479,17 +479,17 @@ export async function getAthleteEvolutionAction() {
             }));
 
         const weightHistory = athlete.metrics
-            .filter(m => m.category === 'WEIGHT' || (m.category === 'AEROBIC' && m.rawResult)) // Logic for weight might vary
-            .map(m => ({
+            .filter((m: any) => m.category === 'WEIGHT' || (m.category === 'AEROBIC' && m.rawResult)) // Logic for weight might vary
+            .map((m: any) => ({
                 date: new Date(m.date).toLocaleDateString('pt-BR'),
                 value: m.rawResult
             }));
 
         // Se quisermos algo mais específico para "Tempos em Provas", podemos filtrar as métricas de corrida
         const raceTimes = athlete.metrics
-            .filter(m => m.testType === 'Corrida' || m.testType === 'Cooper' || m.category === 'RACE' || m.category === 'STRENGTH')
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Ordem decrescente
-            .map(m => {
+            .filter((m: any) => m.testType === 'Corrida' || m.testType === 'Cooper' || m.category === 'RACE' || m.category === 'STRENGTH')
+            .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Ordem decrescente
+            .map((m: any) => {
                 const distanceVal = (m.calculatedVmax && m.rawResult)
                     ? (m.calculatedVmax * m.rawResult) / 3600
                     : null;
@@ -603,7 +603,7 @@ export async function getCoachDashboardStatsAction() {
                 orderBy: { date: 'desc' },
                 take: 10
             });
-            feedbackWorkouts = fbWorkouts.map(w => ({
+            feedbackWorkouts = fbWorkouts.map((w: any) => ({
                 id: w.id,
                 athleteName: (w.athlete as any)?.user?.name || "Atleta",
                 date: w.date.toLocaleDateString('pt-BR'),
@@ -629,7 +629,7 @@ export async function getCoachDashboardStatsAction() {
                 orderBy: { date: 'desc' },
                 take: 10
             });
-            recentActivities = studentActivities.map(a => ({
+            recentActivities = studentActivities.map((a: any) => ({
                 id: a.id,
                 athleteName: a.athlete.user?.name || "Atleta",
                 exercise: a.exercise,
@@ -985,7 +985,7 @@ export async function calculateWeeklyProgress(athleteId: string, startDate?: str
         let weeklyRunningKm = 0;
         let weeklyStrengthCount = 0;
 
-        weeklyMetrics.forEach(m => {
+        weeklyMetrics.forEach((m: any) => {
             if (m.category === "RACE") {
                 if (m.calculatedVmax) {
                     const dist = (m.calculatedVmax / 3.6) * m.rawResult / 1000;

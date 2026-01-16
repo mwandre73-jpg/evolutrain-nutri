@@ -174,7 +174,7 @@ export async function syncStravaActivitiesAction() {
             const activityDate = new Date(activity.start_date_local);
 
             // Avoid duplicates: check if activity with same date and distance already exists
-            const exists = profile.metrics.some(m =>
+            const exists = profile.metrics.some((m: any) =>
                 m.category === 'RACE' &&
                 Math.abs(m.rawResult - activity.moving_time) < 5 && // Close enough time
                 (m.calculatedVmax !== null && Math.abs(m.calculatedVmax - (activity.average_speed * 3.6)) < 0.1) // Close enough avg speed
