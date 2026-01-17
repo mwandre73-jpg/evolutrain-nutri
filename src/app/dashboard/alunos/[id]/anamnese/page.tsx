@@ -22,7 +22,7 @@ export default function AnamnesePage() {
     const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
     const [isComparisonOpen, setIsComparisonOpen] = useState(false);
 
-    const [formData, setFormData] = useState({
+    const INITIAL_FORM_DATA = {
         id: "",
         weight: "",
         height: "",
@@ -37,7 +37,9 @@ export default function AnamnesePage() {
         photoSideUrl: "",
         photoBackUrl: "",
         photoNotes: ""
-    });
+    };
+
+    const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
     const [results, setResults] = useState({
         bmi: 0,
@@ -200,6 +202,14 @@ export default function AnamnesePage() {
         });
     };
 
+    const handleNewEvaluation = () => {
+        setFormData({
+            ...INITIAL_FORM_DATA,
+            weight: athlete?.peso?.toString() || "",
+            height: athlete?.altura?.toString() || ""
+        });
+    };
+
     const toggleComparison = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         setSelectedForComparison(prev =>
@@ -243,10 +253,13 @@ export default function AnamnesePage() {
         if (result.success) {
             const newHistory = await getAnamneseHistoryAction(id as string);
             setHistory(newHistory);
-            alert("Avaliação salva com sucesso!");
-            if (!formData.id) {
-                setFormData(prev => ({ ...prev, id: "" })); // Reset ID for new evaluation if it was a create
+
+            // If it was a NEW evaluation, update formData with the returned ID
+            if (result.id) {
+                setFormData(prev => ({ ...prev, id: result.id }));
             }
+
+            alert("Avaliação salva com sucesso!");
         } else {
             alert("Erro ao salvar: " + result.error);
         }
@@ -298,7 +311,7 @@ export default function AnamnesePage() {
                                 </button>
                             )}
                             <button
-                                onClick={() => { setFormData(prev => ({ ...prev, id: "", date: new Date().toISOString().split('T')[0] })); }}
+                                onClick={handleNewEvaluation}
                                 className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-800 text-sm font-bold text-zinc-600 hover:text-brand-primary transition-all"
                             >
                                 <Plus size={18} /> NOVO

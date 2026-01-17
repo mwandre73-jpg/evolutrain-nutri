@@ -14,8 +14,9 @@ export async function saveAnamneseAction(data: any) {
 
         const { id, athleteProfileId, ...anamneseData } = data;
 
+        let saved;
         if (id) {
-            await prisma.anamnesis.update({
+            saved = await prisma.anamnesis.update({
                 where: { id },
                 data: {
                     ...anamneseData,
@@ -23,7 +24,7 @@ export async function saveAnamneseAction(data: any) {
                 }
             });
         } else {
-            await prisma.anamnesis.create({
+            saved = await prisma.anamnesis.create({
                 data: {
                     ...anamneseData,
                     athleteProfileId,
@@ -33,7 +34,7 @@ export async function saveAnamneseAction(data: any) {
         }
 
         revalidatePath(`/dashboard/alunos/${athleteProfileId}/anamnese`);
-        return { success: true };
+        return { success: true, id: saved.id };
     } catch (error: any) {
         console.error("Error saving anamnese:", error);
         return { success: false, error: error.message };
