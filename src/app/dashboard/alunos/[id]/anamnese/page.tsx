@@ -528,16 +528,16 @@ export default function AnamnesePage() {
                         </div>
                     </header>
 
-                    <main className="max-w-7xl mx-auto p-6 space-y-12">
+                    <main className="max-w-7xl mx-auto p-4 lg:p-6 space-y-8 lg:space-y-12">
                         {/* Summary Comparison */}
-                        <div className="grid grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
                             {comparisonItems.map((item, idx) => (
-                                <div key={item.id} className="p-6 rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl space-y-4">
-                                    <div className="flex items-center justify-between">
+                                <div key={item.id} className="p-4 lg:p-6 rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl space-y-3 lg:space-y-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                                         <span className="text-zinc-500 font-black uppercase text-[10px] tracking-widest">{idx === 0 ? "Avaliação Anterior" : "Avaliação Recente"}</span>
-                                        <span className="text-brand-primary font-black uppercase text-sm">{formatDateToBR(item.date)}</span>
+                                        <span className="text-brand-primary font-black uppercase text-xs lg:text-sm">{formatDateToBR(item.date)}</span>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-2 gap-3 lg:gap-4">
                                         <div className="p-4 rounded-2xl bg-white/5 border border-white/5 text-center">
                                             <p className="text-[9px] text-zinc-500 uppercase font-black mb-1">Peso</p>
                                             <p className="text-2xl font-black text-white">{item.weight}kg</p>
@@ -562,14 +562,14 @@ export default function AnamnesePage() {
                                     <div className="px-4 py-2 rounded-full bg-brand-primary text-white text-xs font-black uppercase tracking-widest">{view.label}</div>
                                     <div className="flex-1 h-[1px] bg-white/10"></div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-8 h-[700px]">
+                                <div className="grid grid-cols-2 gap-2 lg:gap-8 h-[400px] lg:h-[700px]">
                                     {comparisonItems.map((item) => (
-                                        <div key={item.id} className="relative rounded-[40px] overflow-hidden bg-zinc-900 ring-4 ring-white/5 group shadow-2xl">
+                                        <div key={item.id} className="relative rounded-2xl lg:rounded-[40px] overflow-hidden bg-zinc-900 ring-2 lg:ring-4 ring-white/5 group shadow-2xl">
                                             {item[view.name] ? (
                                                 <>
                                                     <img src={item[view.name]} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                                    <div className="absolute top-8 left-8 p-4 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
-                                                        <p className="text-white text-xs font-black uppercase">{formatDateToBR(item.date)}</p>
+                                                    <div className="absolute top-2 left-2 lg:top-8 lg:left-8 p-2 lg:p-4 rounded-xl lg:rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
+                                                        <p className="text-white text-[8px] lg:text-xs font-black uppercase">{formatDateToBR(item.date)}</p>
                                                     </div>
                                                 </>
                                             ) : (
