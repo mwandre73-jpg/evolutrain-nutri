@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getAthletes, getAthleteAction } from "@/app/actions/athletes";
 import { saveWorkoutAction, getWorkoutTemplatesAction, saveWorkoutTemplateAction, updateWorkoutTemplateAction, checkAthletesWorkoutsAction } from "@/app/actions/workouts";
+import { getExercisesAction } from "@/app/actions/exercises";
 import { kmhParaPace, calcularLAN, calcularVelocidadePorClassificacao, ZONAS_CONFIG } from "@/lib/calculos";
 
 const EXERCICIOS_BASE = {
@@ -34,6 +35,8 @@ export default function NovaPlanilhaPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterMode, setFilterMode] = useState<"all" | "pending" | "prescribed">("all");
     const [prescribedIds, setPrescribedIds] = useState<string[]>([]);
+    const [libraryExercises, setLibraryExercises] = useState<any[]>([]);
+    const [selectedWorkoutExercises, setSelectedWorkoutExercises] = useState<any[]>([]);
 
     // Form data
     const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -74,6 +77,7 @@ export default function NovaPlanilhaPage() {
     useEffect(() => {
         getAthletes().then(setAthletes);
         getWorkoutTemplatesAction().then(setTemplates);
+        getExercisesAction().then(setLibraryExercises);
     }, []);
 
     useEffect(() => {
@@ -241,6 +245,20 @@ export default function NovaPlanilhaPage() {
 
     const handleAddExercise = () => {
         if (!selectedExercise) return;
+
+        // Find the exercise in the library to get the ID
+        const exerciseData = libraryExercises.find(ex => ex.name === selectedExercise);
+
+        if (exerciseData) {
+            setSelectedWorkoutExercises(prev => [...prev, {
+                exerciseId: exerciseData.id,
+                sets: 3, // Default sets
+                reps: 12, // Default reps
+                weight: parseFloat(((bodyPart === 'SUPERIORES' ? references.supino : references.agachamento) * (weightPercent / 100)).toFixed(1)),
+                name: selectedExercise
+            }]);
+        }
+
         const cargaStr = weightPercent > 0 ? `: {C:${weightPercent}:${selectedExercise.split(' ')[0]}}` : "";
         const newText = description ? description + `\n- ${selectedExercise}: 3x12${cargaStr}` : `- ${selectedExercise}: 3x12${cargaStr}`;
         setDescription(newText);
@@ -335,7 +353,8 @@ export default function NovaPlanilhaPage() {
             prescribedIntensity: intensity || (type === "Musculação" ? (bodyPart === "SUPERIORES" ? "Membros Superiores" : "Membros Inferiores") : ""),
             repeatWeeks,
             classification,
-            customPercent
+            customPercent,
+            exercises: type === "Musculação" ? selectedWorkoutExercises : undefined
         });
 
         if (res.success) {
