@@ -13,10 +13,9 @@ export async function saveAnamneseAction(data: any) {
         }
 
         const { id, athleteProfileId, ...anamneseData } = data;
-        const db = prisma as any;
 
         if (id) {
-            await db.anamnesis.update({
+            await prisma.anamnesis.update({
                 where: { id },
                 data: {
                     ...anamneseData,
@@ -24,7 +23,7 @@ export async function saveAnamneseAction(data: any) {
                 }
             });
         } else {
-            await db.anamnesis.create({
+            await prisma.anamnesis.create({
                 data: {
                     ...anamneseData,
                     athleteProfileId,

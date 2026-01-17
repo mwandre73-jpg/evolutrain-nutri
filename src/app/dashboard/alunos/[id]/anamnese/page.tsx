@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { getAthleteAction } from "@/app/actions/athletes";
 import { saveAnamneseAction, getAnamneseHistoryAction, deleteAnamneseAction } from "@/app/actions/anamnesis";
 import { calcularIMC, calcularDensidadePollock3Homens, calcularDensidadePollock7Homens, calcularDensidadePollock3Mulheres, calcularDensidadePollock7Mulheres, calcularPercentualGorduraSiri } from "@/lib/calculos";
-import { Plus, Trash2, ChevronLeft, Save, Scale, Ruler, Activity, History, Download, FileText } from "lucide-react";
+import { Plus, Trash2, ChevronLeft, Save, Scale, Ruler, Activity, History, Download, FileText, Camera, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -30,7 +30,12 @@ export default function AnamnesePage() {
         triceps: "", subscapular: "", chest_fold: "",
         axilla: "", suprailiac: "", abdominal_fold: "", thigh_fold: "",
         // Method
-        method: "POLLOCK_7"
+        method: "POLLOCK_7",
+        // High-Definition Assessment Photos
+        photoFrontUrl: "",
+        photoSideUrl: "",
+        photoBackUrl: "",
+        photoNotes: ""
     });
 
     const [results, setResults] = useState({
@@ -519,6 +524,49 @@ export default function AnamnesePage() {
                                     />
                                 </div>
                             ))}
+                        </div>
+                    </div>
+
+                    {/* Avaliação Visual (HD Photos) */}
+                    <div className="rounded-3xl bg-white dark:bg-zinc-900 p-8 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-800">
+                        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+                            <Camera size={20} className="text-brand-primary" /> Avaliação Visual (HD)
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {[
+                                { label: "Frente", name: "photoFrontUrl" },
+                                { label: "Lado", name: "photoSideUrl" },
+                                { label: "Costas", name: "photoBackUrl" }
+                            ].map((slot) => (
+                                <div key={slot.name} className="space-y-3">
+                                    <label className="block text-xs font-bold uppercase text-zinc-500 ml-1">{slot.label}</label>
+                                    <div className="aspect-[3/4] rounded-2xl bg-zinc-50 dark:bg-zinc-800 border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center gap-2 group hover:border-brand-primary transition-all cursor-pointer relative overflow-hidden">
+                                        {(formData as any)[slot.name] ? (
+                                            <img src={(formData as any)[slot.name]} className="h-full w-full object-cover" alt={slot.label} />
+                                        ) : (
+                                            <>
+                                                <ImageIcon className="text-zinc-300 group-hover:text-brand-primary transition-colors" size={32} />
+                                                <p className="text-[10px] font-bold text-zinc-400">Clique para enviar</p>
+                                            </>
+                                        )}
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <p className="text-white text-[10px] font-black uppercase tracking-widest">Upload HD</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-zinc-400 text-center italic">Qualidade original preservada</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-6">
+                            <label className="block text-xs font-bold uppercase text-zinc-500 mb-2 ml-1">Observações da Avaliação Visual</label>
+                            <textarea
+                                name="photoNotes"
+                                value={formData.photoNotes || ""}
+                                onChange={(e: any) => handleInputChange(e)}
+                                rows={3}
+                                className="w-full rounded-2xl bg-zinc-50 dark:bg-zinc-800 px-4 py-3 text-sm ring-1 ring-zinc-200 dark:ring-zinc-700 outline-none focus:ring-2 focus:ring-brand-primary"
+                                placeholder="Descreva postura, assimetrias ou detalhes visuais..."
+                            />
                         </div>
                     </div>
 

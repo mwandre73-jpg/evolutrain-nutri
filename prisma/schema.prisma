@@ -130,9 +130,42 @@ model Workouts {
   feedbackText        String?        @db.Text
   feedbackRead        Boolean        @default(false)
   athlete             AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade, map: "Workouts_athleteProfileId_fkey")
+  exercises           WorkoutExercise[]
 
   @@index([athleteProfileId], map: "Workouts_athleteProfileId_fkey")
   @@map("workouts")
+}
+
+model Exercise {
+  id          String   @id @default(uuid())
+  name        String
+  muscles     String?
+  videoUrl    String?  @db.Text
+  thumbnailUrl String? @db.Text
+  createdAt   DateTime @default(now())
+  
+  workoutExercises WorkoutExercise[]
+
+  @@map("exercise")
+}
+
+model WorkoutExercise {
+  id          String   @id @default(uuid())
+  workoutId   String
+  exerciseId  String
+  order       Int      @default(0)
+  sets        Int?
+  reps        Int?
+  weight      Float?
+  rest        String?
+  notes       String?  @db.Text
+
+  workout     Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([workoutId])
+  @@index([exerciseId])
+  @@map("workoutexercise")
 }
 
 model Invitation {
@@ -188,6 +221,12 @@ model Anamnesis {
   bmi              Float?
   bodyFat          Float?
   method           String?         // "POLLOCK_3" or "POLLOCK_7"
+  
+  // High-Definition Assessment Photos
+  photoFrontUrl    String?         @db.Text
+  photoSideUrl     String?         @db.Text
+  photoBackUrl     String?         @db.Text
+  photoNotes       String?         @db.Text
   
   athlete          AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade)
 
