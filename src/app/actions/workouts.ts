@@ -108,14 +108,14 @@ export async function saveWorkoutAction(data: {
                             m.category === 'STRENGTH' &&
                             m.exercise?.toLowerCase().includes(exerciseHint.toLowerCase())
                         );
-                        if (specificMetric) loadRef = specificMetric.result || 0;
+                        if (specificMetric) loadRef = (specificMetric as any).rawResult || 0;
                     }
                     if (!loadRef) {
                         const isSuperiores = individualizedIntensity.toLowerCase().includes('superior') ||
                             (exerciseHint && ['supino', 'ombro', 'triceps', 'peito', 'costas'].some((h: any) => exerciseHint.toLowerCase().includes(h)));
                         const refType = isSuperiores ? 'supino' : 'agachamento';
                         const refMetric = athlete.metrics.find((m: any) => m.exercise?.toLowerCase().includes(refType));
-                        if (refMetric) loadRef = refMetric.result || 0;
+                        if (refMetric) loadRef = (refMetric as any).rawResult || 0;
                     }
                     if (loadRef > 0) {
                         const load = (loadRef * (p / 100)).toFixed(1);
@@ -228,6 +228,41 @@ export async function updateWorkoutAction(id: string, data: {
     } catch (error) {
         console.error("Error updating workout:", error);
         return { success: false, error: (error as Error).message };
+    }
+}
+
+export async function getCoachSelfWorkoutsAction() {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session || session.user.role !== "COACH") {
+            return [];
+        }
+
+        const athleteProfile = await prisma.athleteProfile.findUnique({
+            where: { userId: session.user.id }
+        });
+
+        if (!athleteProfile) return [];
+
+        const workouts = await prisma.workouts.findMany({
+            where: {
+                athleteProfileId: athleteProfile.id,
+                date: {
+                    gte: new Date(new Date().setHours(0, 0, 0, 0))
+                }
+            },
+            orderBy: { date: 'asc' },
+            take: 4
+        });
+
+        return workouts.map((w: any) => ({
+            ...w,
+            date: w.date.toLocaleDateString('pt-BR'),
+            intensity: w.prescribedIntensity
+        }));
+    } catch (error) {
+        console.error("Error fetching coach self workouts:", error);
+        return [];
     }
 }
 
