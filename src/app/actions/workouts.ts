@@ -275,11 +275,21 @@ export async function getWorkoutsAction() {
             ? { athlete: { coachId: session.user.id } }
             : { athleteProfileId: session.user.id };
 
-        return await prisma.workouts.findMany({
+        const workouts = await prisma.workouts.findMany({
             where,
             orderBy: { date: 'desc' },
-            include: { athlete: true }
+            include: {
+                athlete: {
+                    include: { user: true }
+                }
+            }
         });
+
+        return workouts.map((w: any) => ({
+            ...w,
+            athleteName: w.athlete.user?.name || "Atleta",
+            date: w.date.toLocaleDateString('pt-BR')
+        }));
     } catch (error) {
         console.error("Error fetching workouts:", error);
         return [];
@@ -294,7 +304,9 @@ export async function getWorkoutDetailAction(id: string) {
         const workout = await prisma.workouts.findUnique({
             where: { id },
             include: {
-                athlete: true,
+                athlete: {
+                    include: { user: true }
+                },
                 exercises: {
                     include: {
                         exercise: true,
@@ -308,7 +320,7 @@ export async function getWorkoutDetailAction(id: string) {
 
         return {
             ...workout,
-            athleteName: workout.athlete.name,
+            athleteName: workout.athlete.user?.name || "Atleta",
             date: workout.date.toISOString().split('T')[0]
         };
     } catch (error) {
@@ -441,7 +453,7 @@ export async function checkAthletesWorkoutsAction(date: string) {
 
         return {
             success: true,
-            prescribedIds: workouts.map(w => w.athleteProfileId)
+            prescribedIds: workouts.map((w: any) => w.athleteProfileId)
         };
     } catch (error) {
         console.error("Error checking workouts:", error);
