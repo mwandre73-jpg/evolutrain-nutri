@@ -209,10 +209,11 @@ export default function AnamnesePage() {
 
     const handleSave = async () => {
         setIsSaving(true);
+        const { id: evaluationId, ...restOfFormData } = formData;
         const submitData = {
-            id: formData.id || undefined,
+            id: evaluationId || undefined,
             athleteProfileId: id as string,
-            ...formData,
+            ...restOfFormData,
             weight: parseFloat(formData.weight),
             height: parseFloat(formData.height),
             chest: parseFloat(formData.chest) || null,
@@ -349,8 +350,8 @@ export default function AnamnesePage() {
                                                 key={h.id}
                                                 onClick={() => handleLoadEvaluation(h)}
                                                 className={`group p-4 rounded-2xl cursor-pointer transition-all border-2 relative ${formData.id === h.id
-                                                        ? "bg-brand-primary/5 border-brand-primary"
-                                                        : "bg-zinc-50 dark:bg-zinc-800/50 border-transparent hover:border-zinc-300 dark:hover:border-zinc-700"
+                                                    ? "bg-brand-primary/5 border-brand-primary"
+                                                    : "bg-zinc-50 dark:bg-zinc-800/50 border-transparent hover:border-zinc-300 dark:hover:border-zinc-700"
                                                     }`}
                                             >
                                                 <div className="flex items-center justify-between mb-2">
@@ -358,8 +359,8 @@ export default function AnamnesePage() {
                                                         <div
                                                             onClick={(e) => toggleComparison(h.id, e)}
                                                             className={`w-5 h-5 rounded border-2 transition-all flex items-center justify-center ${selectedForComparison.includes(h.id)
-                                                                    ? "bg-brand-primary border-brand-primary"
-                                                                    : "border-zinc-300 dark:border-zinc-600"
+                                                                ? "bg-brand-primary border-brand-primary"
+                                                                : "border-zinc-300 dark:border-zinc-600"
                                                                 }`}
                                                         >
                                                             {selectedForComparison.includes(h.id) && <ArrowRightLeft size={10} className="text-white" />}
