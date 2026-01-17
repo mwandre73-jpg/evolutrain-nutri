@@ -517,7 +517,7 @@ export default function AnamnesePage() {
 
                     <main className="max-w-7xl mx-auto p-6 space-y-12">
                         {/* Summary Comparison */}
-                        <div className="grid grid-cols-2 gap-8 sticky top-[100px] z-10">
+                        <div className="grid grid-cols-2 gap-8">
                             {comparisonItems.map((item, idx) => (
                                 <div key={item.id} className="p-6 rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl space-y-4">
                                     <div className="flex items-center justify-between">
