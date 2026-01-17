@@ -7,18 +7,6 @@ import { saveWorkoutAction, getWorkoutTemplatesAction, saveWorkoutTemplateAction
 import { getExercisesAction } from "@/app/actions/exercises";
 import { kmhParaPace, calcularLAN, calcularVelocidadePorClassificacao, ZONAS_CONFIG } from "@/lib/calculos";
 
-const EXERCICIOS_BASE = {
-    SUPERIORES: [
-        "Supino Reto", "Peck Deck", "Desenvolvimento", "Elevação Lateral",
-        "Puxada Aberta", "Remada Curvada", "Rosca Direta", "Tríceps Pulley",
-        "Flexão de Braços", "Remada Baixa"
-    ],
-    INFERIORES: [
-        "Agachamento Livre", "Leg Press 45", "Cadeira Extensora", "Mesa Flexora",
-        "Afundo", "Panturrilha Sentado", "Levantamento Terra", "Cadeira Adutora",
-        "Cadeira Abdutora", "Stiff"
-    ]
-};
 
 export default function NovaPlanilhaPage() {
     const router = useRouter();
@@ -617,9 +605,18 @@ export default function NovaPlanilhaPage() {
                                             className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800"
                                         >
                                             <option value="">Escolher exercício...</option>
-                                            {EXERCICIOS_BASE[bodyPart].map(ex => (
-                                                <option key={ex} value={ex}>{ex}</option>
-                                            ))}
+                                            {libraryExercises
+                                                .filter(ex => {
+                                                    if (!bodyPart) return true;
+                                                    const group = bodyPart === 'SUPERIORES' ?
+                                                        ["Peito", "Costas", "Ombros", "Bíceps", "Tríceps", "Geral", "Superiores", "Core"] :
+                                                        ["Quadríceps", "Posterior", "Glúteos", "Adutores", "Panturrilha", "Inferiores"];
+                                                    return group.includes(ex.muscles);
+                                                })
+                                                .map(ex => (
+                                                    <option key={ex.id} value={ex.name}>{ex.name}</option>
+                                                ))
+                                            }
                                         </select>
                                     </div>
                                     <div className="w-24 space-y-2">

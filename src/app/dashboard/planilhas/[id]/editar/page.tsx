@@ -7,18 +7,6 @@ import { getWorkoutDetailAction, updateWorkoutAction } from "@/app/actions/worko
 import { getExercisesAction } from "@/app/actions/exercises";
 import { kmhParaPace, calcularVelocidadePorClassificacao, ZONAS_CONFIG } from "@/lib/calculos";
 
-const EXERCICIOS_BASE = {
-    SUPERIORES: [
-        "Supino Reto", "Peck Deck", "Desenvolvimento", "Elevação Lateral",
-        "Puxada Aberta", "Remada Curvada", "Rosca Direta", "Tríceps Pulley",
-        "Flexão de Braços", "Remada Baixa"
-    ],
-    INFERIORES: [
-        "Agachamento Livre", "Leg Press 45", "Cadeira Extensora", "Mesa Flexora",
-        "Afundo", "Panturrilha Sentado", "Levantamento Terra", "Cadeira Adutora",
-        "Cadeira Abdutora", "Stiff"
-    ]
-};
 
 export default function EditarPlanilhaPage() {
     const router = useRouter();
@@ -251,7 +239,16 @@ export default function EditarPlanilhaPage() {
                             <div className="flex gap-2">
                                 <select value={selectedExercise} onChange={(e) => setSelectedExercise(e.target.value)} className="flex-1 rounded-2xl bg-zinc-50 border-none px-4 py-3 dark:bg-zinc-800">
                                     <option value="">Exercício...</option>
-                                    {EXERCICIOS_BASE[bodyPart].map(ex => <option key={ex} value={ex}>{ex}</option>)}
+                                    {libraryExercises
+                                        .filter(ex => {
+                                            if (!bodyPart) return true;
+                                            const group = bodyPart === 'SUPERIORES' ?
+                                                ["Peito", "Costas", "Ombros", "Bíceps", "Tríceps", "Geral", "Superiores", "Core"] :
+                                                ["Quadríceps", "Posterior", "Glúteos", "Adutores", "Panturrilha", "Inferiores"];
+                                            return group.includes(ex.muscles);
+                                        })
+                                        .map(ex => <option key={ex.id} value={ex.name}>{ex.name}</option>)
+                                    }
                                 </select>
                                 <button onClick={handleAddExercise} className="px-6 py-3 bg-brand-primary text-white rounded-2xl font-bold">Add</button>
                             </div>
