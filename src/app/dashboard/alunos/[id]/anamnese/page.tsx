@@ -210,6 +210,156 @@ export default function AnamnesePage() {
         });
     };
 
+    const generateEvaluationPDF = async () => {
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const dateStr = formatDateToBR(formData.date);
+
+        // Header
+        doc.setFillColor(14, 47, 90); // Brand Dark Blue
+        doc.rect(0, 0, pageWidth, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text("EvoluNutri", 15, 20);
+        doc.setFontSize(12);
+        doc.text("Relatório de Avaliação Física", 15, 30);
+        doc.text(dateStr, pageWidth - 40, 30);
+
+        // Athlete Info
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(14);
+        doc.text(`Atleta: ${athlete?.name || "N/A"}`, 15, 55);
+        doc.line(15, 60, pageWidth - 15, 60);
+
+        // Results Table
+        autoTable(doc, {
+            startY: 70,
+            head: [['Medida Principal', 'Valor']],
+            body: [
+                ['Peso', `${formData.weight} kg`],
+                ['Altura', `${formData.height} cm`],
+                ['IMC', results.bmi.toFixed(2)],
+                ['% Gordura', `${results.bodyFat.toFixed(1)}%`],
+                ['Massa Gorda', `${results.fatMass.toFixed(2)} kg`],
+                ['Massa Magra', `${results.leanMass.toFixed(2)} kg`],
+            ],
+            theme: 'striped',
+            headStyles: { fillColor: [242, 101, 34] } // Brand Primary
+        });
+
+        // Circumferences & Folds Table
+        autoTable(doc, {
+            startY: (doc as any).lastAutoTable.finalY + 10,
+            head: [['Perímetros', 'cm', 'Dobras', 'mm']],
+            body: [
+                ['Tórax', formData.chest || '-', 'Peitoral', formData.chest_fold || '-'],
+                ['Cintura', formData.waist || '-', 'Tríceps', formData.triceps || '-'],
+                ['Abdomên', formData.abdomen || '-', 'Subescapular', formData.subscapular || '-'],
+                ['Quadril', formData.hip || '-', 'Supra-ilíaca', formData.suprailiac || '-'],
+                ['Braço D', formData.armR || '-', 'Abdominal', formData.abdominal_fold || '-'],
+                ['Braço E', formData.armL || '-', 'Coxa', formData.thigh_fold || '-'],
+            ],
+        });
+
+        // Photos on new page
+        if (formData.photoFrontUrl || formData.photoSideUrl || formData.photoBackUrl) {
+            doc.addPage();
+            doc.text("Registro Fotográfico HD", 15, 20);
+
+            const addImage = async (url: string, x: number, y: number, w: number, h: number) => {
+                try {
+                    const img = new Image();
+                    img.src = url;
+                    await new Promise((resolve) => { img.onload = resolve; });
+                    doc.addImage(img, 'JPEG', x, y, w, h);
+                } catch (e) {
+                    console.error("Error adding image to PDF", e);
+                }
+            };
+
+            let currentY = 30;
+            if (formData.photoFrontUrl) {
+                await addImage(formData.photoFrontUrl, 15, currentY, 80, 100);
+            }
+            if (formData.photoSideUrl) {
+                await addImage(formData.photoSideUrl, 110, currentY, 80, 100);
+            }
+            if (formData.photoBackUrl) {
+                currentY += 110;
+                await addImage(formData.photoBackUrl, 15, currentY, 80, 100);
+            }
+        }
+
+        doc.save(`avaliacao_${athlete?.name}_${formData.date}.pdf`);
+    };
+
+    const generateComparisonPDF = async () => {
+        if (comparisonItems.length !== 2) return;
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        // Header
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(20);
+        doc.text("EvoluNutri - Comparativo Antes & Depois", 15, 25);
+
+        // Table Comparison
+        const data = [
+            { l: 'Peso (kg)', n: 'weight' },
+            { l: 'IMC', n: 'bmi' },
+            { l: 'Cintura (cm)', n: 'waist' },
+            { l: 'Abdômen (cm)', n: 'abdomen' },
+            { l: 'Gordura (%)', n: 'bodyFat' }
+        ].map(m => {
+            const v1 = comparisonItems[0][m.n] || 0;
+            const v2 = comparisonItems[1][m.n] || 0;
+            const diff = v2 - v1;
+            return [m.l, v1.toFixed(1), v2.toFixed(1), `${diff > 0 ? '+' : ''}${diff.toFixed(1)}`];
+        });
+
+        autoTable(doc, {
+            startY: 50,
+            head: [['Medida', formatDateToBR(comparisonItems[0].date), formatDateToBR(comparisonItems[1].date), 'Evolução']],
+            body: data
+        });
+
+        // Photos on multiple pages
+        const views = [
+            { label: "VISTA FRONTAL", name: "photoFrontUrl" },
+            { label: "VISTA LATERAL", name: "photoSideUrl" },
+            { label: "VISTA POSTERIOR", name: "photoBackUrl" }
+        ];
+
+        for (const view of views) {
+            doc.addPage();
+            doc.setTextColor(14, 47, 90);
+            doc.setFontSize(16);
+            doc.text(view.label, 15, 20);
+
+            const addImg = async (url: string | null, x: number) => {
+                if (!url) return;
+                try {
+                    const img = new Image();
+                    img.src = url;
+                    await new Promise(r => img.onload = r);
+                    doc.addImage(img, 'JPEG', x, 30, 90, 120);
+                } catch (e) { }
+            };
+
+            await addImg(comparisonItems[0][view.name], 10);
+            await addImg(comparisonItems[1][view.name], 105);
+
+            doc.setFontSize(10);
+            doc.text(`Data: ${formatDateToBR(comparisonItems[0].date)}`, 10, 155);
+            doc.text(`Data: ${formatDateToBR(comparisonItems[1].date)}`, 105, 155);
+        }
+
+        doc.save(`comparativo_${athlete?.name}.pdf`);
+    };
+
     const toggleComparison = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         setSelectedForComparison(prev =>
@@ -315,6 +465,12 @@ export default function AnamnesePage() {
                                 className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-800 text-sm font-bold text-zinc-600 hover:text-brand-primary transition-all"
                             >
                                 <Plus size={18} /> NOVO
+                            </button>
+                            <button
+                                onClick={generateEvaluationPDF}
+                                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-800 text-sm font-bold text-zinc-600 hover:text-emerald-500 transition-all"
+                            >
+                                <FileText size={18} /> RELATÓRIO
                             </button>
                             <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-8 py-3 rounded-2xl premium-gradient text-sm font-black text-white shadow-lg transition-all hover:scale-105 active:scale-95 disabled:opacity-50">
                                 <Save size={18} /> {isSaving ? "SALVANDO..." : "SALVAR AVALIAÇÃO"}
@@ -518,7 +674,10 @@ export default function AnamnesePage() {
                 <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md overflow-y-auto pb-20">
                     <header className="sticky top-0 z-50 p-6 flex items-center justify-between border-b border-white/10 bg-black/40 backdrop-blur-xl">
                         <div className="flex items-center gap-6">
-                            <button onClick={() => setIsComparisonOpen(false)} className="p-3 rounded-2xl bg-white/10 text-white hover:bg-white/20 transition-all">
+                            <button
+                                onClick={() => setIsComparisonOpen(false)}
+                                className="p-3 rounded-2xl bg-white/10 text-white hover:bg-white/20 transition-all"
+                            >
                                 <X size={24} />
                             </button>
                             <div>
@@ -526,6 +685,12 @@ export default function AnamnesePage() {
                                 <p className="text-zinc-500 text-xs font-bold uppercase racking-widest">Evolução Visual - {athlete?.name}</p>
                             </div>
                         </div>
+                        <button
+                            onClick={generateComparisonPDF}
+                            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-brand-primary text-white shadow-lg text-sm font-black hover:scale-105 transition-all"
+                        >
+                            <Download size={18} /> BAIXAR PDF
+                        </button>
                     </header>
 
                     <main className="max-w-7xl mx-auto p-4 lg:p-6 space-y-8 lg:space-y-12">
