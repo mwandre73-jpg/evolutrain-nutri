@@ -1,10 +1,11 @@
+export const CLOUDINARY_CLOUD_NAME = "dkyr4jj6t";
+export const CLOUDINARY_UPLOAD_PRESET = "ml_default";
+export const CLOUDINARY_API_KEY = "828764137397953";
+
 export async function getCloudinaryConfig() {
     return {
-        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+        cloudName: CLOUDINARY_CLOUD_NAME,
+        uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+        apiKey: CLOUDINARY_API_KEY
     };
 }
-
-// Para o Cloudinary Widget, geralmente usamos variáveis de ambiente no lado do cliente
-// ou geramos uma assinatura segura no servidor. Como o usuário ainda não proveu
-// as chaves, vou deixar a estrutura pronta para o Widget (Upload Aberto/Preset).
