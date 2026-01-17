@@ -17,7 +17,8 @@ export default function ExerciseLibraryPage() {
     const [formData, setFormData] = useState({
         name: "",
         muscles: "",
-        videoUrl: ""
+        videoUrl: "",
+        instructions: ""
     });
 
     useEffect(() => {
@@ -100,7 +101,7 @@ export default function ExerciseLibraryPage() {
     };
 
     const resetForm = () => {
-        setFormData({ name: "", muscles: "", videoUrl: "" });
+        setFormData({ name: "", muscles: "", videoUrl: "", instructions: "" });
         setEditingId(null);
     };
 
@@ -108,7 +109,8 @@ export default function ExerciseLibraryPage() {
         setFormData({
             name: ex.name,
             muscles: ex.muscles || "",
-            videoUrl: ex.videoUrl || ""
+            videoUrl: ex.videoUrl || "",
+            instructions: ex.instructions || ""
         });
         setEditingId(ex.id);
         setIsModalOpen(true);
@@ -240,6 +242,15 @@ export default function ExerciseLibraryPage() {
                                         onChange={(e) => setFormData({ ...formData, muscles: e.target.value })}
                                         className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold"
                                         placeholder="Ex: Quadríceps, Glúteos"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-black text-zinc-400 uppercase ml-1">Como executar (Instruções)</label>
+                                    <textarea
+                                        value={formData.instructions}
+                                        onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+                                        className="w-full h-32 rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold resize-none"
+                                        placeholder="Descreva a técnica correta, postura e dicas de segurança..."
                                     />
                                 </div>
 

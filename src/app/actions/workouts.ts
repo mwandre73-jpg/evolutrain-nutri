@@ -250,6 +250,13 @@ export async function getWorkoutDetailAction(id: string) {
                             select: { name: true }
                         }
                     }
+                },
+                exercises: {
+                    include: {
+                        exercise: true,
+                        executions: true
+                    },
+                    orderBy: { order: 'asc' }
                 }
             }
         });
@@ -565,6 +572,52 @@ export async function markFeedbackAsReadAction(id: string) {
         return { success: true };
     } catch (error) {
         console.error("Error marking feedback as read:", error);
+        return { success: false };
+    }
+}
+
+export async function saveSetExecutionAction(data: {
+    workoutExerciseId: string;
+    setNumber: number;
+    weight: number;
+    reps: number;
+}) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session) throw new Error("Unauthorized");
+
+        // Find if execution already exists for this set
+        const existing = await (prisma as any).workoutExerciseExecution.findFirst({
+            where: {
+                workoutExerciseId: data.workoutExerciseId,
+                setNumber: data.setNumber
+            }
+        });
+
+        if (existing) {
+            await (prisma as any).workoutExerciseExecution.update({
+                where: { id: existing.id },
+                data: {
+                    weight: data.weight,
+                    reps: data.reps,
+                    completed: true
+                }
+            });
+        } else {
+            await (prisma as any).workoutExerciseExecution.create({
+                data: {
+                    workoutExerciseId: data.workoutExerciseId,
+                    setNumber: data.setNumber,
+                    weight: data.weight,
+                    reps: data.reps,
+                    completed: true
+                }
+            });
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error saving set execution:", error);
         return { success: false };
     }
 }

@@ -20,6 +20,7 @@ export async function saveExerciseAction(data: {
     name: string;
     muscles?: string;
     videoUrl?: string;
+    instructions?: string;
 }) {
     try {
         if (data.id) {
@@ -28,7 +29,8 @@ export async function saveExerciseAction(data: {
                 data: {
                     name: data.name,
                     muscles: data.muscles,
-                    videoUrl: data.videoUrl
+                    videoUrl: data.videoUrl,
+                    instructions: data.instructions
                 }
             });
         } else {
@@ -36,7 +38,8 @@ export async function saveExerciseAction(data: {
                 data: {
                     name: data.name,
                     muscles: data.muscles,
-                    videoUrl: data.videoUrl
+                    videoUrl: data.videoUrl,
+                    instructions: data.instructions
                 }
             });
         }

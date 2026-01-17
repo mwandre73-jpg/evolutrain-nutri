@@ -142,6 +142,7 @@ model Exercise {
   muscles     String?
   videoUrl    String?  @db.Text
   thumbnailUrl String? @db.Text
+  instructions String? @db.Text
   createdAt   DateTime @default(now())
   
   workoutExercises WorkoutExercise[]
@@ -162,10 +163,27 @@ model WorkoutExercise {
 
   workout     Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  
+  executions  WorkoutExerciseExecution[]
 
   @@index([workoutId])
   @@index([exerciseId])
   @@map("workoutexercise")
+}
+
+model WorkoutExerciseExecution {
+  id                String   @id @default(uuid())
+  workoutExerciseId String
+  setNumber         Int
+  weight            Float?
+  reps              Int?
+  completed         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+
+  @@index([workoutExerciseId])
+  @@map("workoutexerciseexecution")
 }
 
 model Invitation {

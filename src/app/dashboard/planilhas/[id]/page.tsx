@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getWorkoutDetailAction, markWorkoutAsCompletedAction, deleteWorkoutAction, saveWorkoutFeedbackAction } from "@/app/actions/workouts";
+import { getWorkoutDetailAction, markWorkoutAsCompletedAction, deleteWorkoutAction, saveWorkoutFeedbackAction, saveSetExecutionAction } from "@/app/actions/workouts";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { MessageSquare, Star, Send } from "lucide-react";
+import { MessageSquare, Star, Send, Play, CheckCircle2, ChevronDown, ChevronUp, RotateCcw, AlertCircle, X, Maximize2, ArrowRightLeft } from "lucide-react";
 
 export default function WorkoutDetailPage() {
     const { id } = useParams();
@@ -16,12 +16,23 @@ export default function WorkoutDetailPage() {
     const [deleting, setDeleting] = useState(false);
     const [savingFeedback, setSavingFeedback] = useState(false);
     const [isEditingFeedback, setIsEditingFeedback] = useState(false);
+
+    // Bodybuilding Execution State
+    const [currentExerciseIdx, setCurrentExerciseIdx] = useState(0);
+    const [currentSetIdx, setCurrentSetIdx] = useState(0);
+    const [setValues, setSetValues] = useState({ weight: "", reps: "" });
+    const [isSavingSet, setIsSavingSet] = useState(false);
+    const [showInstructions, setShowInstructions] = useState(false);
+
     const [feedback, setFeedback] = useState({
         perception: 5,
         text: ""
     });
     const { data: session } = useSession();
     const isCoach = session?.user?.role === "COACH";
+
+    const isBodybuilding = workout?.type === 'Musculação' && !isCoach;
+    const currentExercise = workout?.exercises?.[currentExerciseIdx];
 
     useEffect(() => {
         if (id) {
@@ -38,7 +49,54 @@ export default function WorkoutDetailPage() {
         }
     }, [id]);
 
+    const handleSaveSet = async () => {
+        if (!setValues.weight || !setValues.reps) {
+            alert("Preencha o peso e as repetições.");
+            return;
+        }
+
+        const currentExercise = workout.exercises[currentExerciseIdx];
+        setIsSavingSet(true);
+
+        const res = await saveSetExecutionAction({
+            workoutExerciseId: currentExercise.id,
+            setNumber: currentSetIdx + 1,
+            weight: parseFloat(setValues.weight),
+            reps: parseInt(setValues.reps)
+        });
+
+        if (res.success) {
+            // Update local state to show completed
+            const updatedWorkout = { ...workout };
+            const exercise = updatedWorkout.exercises[currentExerciseIdx];
+            if (!exercise.executions) exercise.executions = [];
+
+            const existingIdx = exercise.executions.findIndex((e: any) => e.setNumber === currentSetIdx + 1);
+            if (existingIdx >= 0) {
+                exercise.executions[existingIdx] = { ...exercise.executions[existingIdx], weight: parseFloat(setValues.weight), reps: parseInt(setValues.reps), completed: true };
+            } else {
+                exercise.executions.push({ setNumber: currentSetIdx + 1, weight: parseFloat(setValues.weight), reps: parseInt(setValues.reps), completed: true });
+            }
+
+            setWorkout(updatedWorkout);
+
+            // Move to next set or next exercise
+            if (currentSetIdx + 1 < (exercise.sets || 3)) {
+                setCurrentSetIdx(prev => prev + 1);
+            } else if (currentExerciseIdx + 1 < workout.exercises.length) {
+                setCurrentExerciseIdx(prev => prev + 1);
+                setCurrentSetIdx(0);
+            } else {
+                // Workout finished!
+                alert("Parabéns! Você concluiu todos os exercícios.");
+                setIsEditingFeedback(true);
+            }
+        }
+        setIsSavingSet(false);
+    };
+
     const handleSaveFeedback = async () => {
+        // ... existing handleSaveFeedback and handleDelete code ...
         if (feedback.text.length < 5) {
             alert("Por favor, escreva suas percepções antes de salvar.");
             return;
@@ -79,6 +137,169 @@ export default function WorkoutDetailPage() {
                 <Link href="/dashboard/planilhas" className="mt-4 text-brand-primary hover:underline">
                     Voltar para a lista
                 </Link>
+            </div>
+        );
+    }
+
+    if (isBodybuilding && currentExercise) {
+        return (
+            <div className="fixed inset-0 z-50 bg-[#0a0a0a] flex flex-col animate-slide-up text-white overflow-hidden">
+                {/* Dark Header */}
+                <header className="p-4 flex items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-xl">
+                    <button
+                        onClick={() => router.push("/dashboard/treinos")}
+                        className="p-2 rounded-xl bg-white/5 text-white/60 hover:text-white transition-all"
+                    >
+                        <X size={24} />
+                    </button>
+                    <div className="text-center">
+                        <h2 className="text-orange-500 font-extrabold uppercase text-sm tracking-widest">{currentExercise.exercise?.name || "Exercício"}</h2>
+                        <p className="text-[10px] text-zinc-500 font-black tracking-tighter uppercase mt-0.5">
+                            Série {currentSetIdx + 1} de {currentExercise.sets || 3}
+                        </p>
+                    </div>
+                    <div className="w-10"></div> {/* Spacer for symmetry */}
+                </header>
+
+                <main className="flex-1 overflow-y-auto pb-32">
+                    {/* Video Loop Section */}
+                    <div className="relative aspect-video w-full bg-zinc-900 overflow-hidden">
+                        {currentExercise.exercise?.videoUrl ? (
+                            <video
+                                src={currentExercise.exercise.videoUrl}
+                                autoPlay muted loop playsInline
+                                className="w-full h-full object-cover shadow-2xl"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-zinc-700 bg-zinc-900">
+                                <Play size={48} className="mb-4 opacity-20" />
+                                <p className="text-xs uppercase font-black">Vídeo não disponível</p>
+                            </div>
+                        )}
+                        <div className="absolute bottom-4 right-4 p-2 rounded-lg bg-black/60 backdrop-blur-md border border-white/10">
+                            <Maximize2 size={16} className="text-white/60" />
+                        </div>
+                    </div>
+
+                    {/* Content Section */}
+                    <div className="p-6 space-y-6">
+                        {/* How to execute dropdown */}
+                        <div className="rounded-2xl bg-zinc-900 border border-white/5 overflow-hidden">
+                            <button
+                                onClick={() => setShowInstructions(!showInstructions)}
+                                className="w-full p-4 flex items-center justify-between group hover:bg-white/5 transition-all text-blue-400 font-bold text-xs uppercase"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
+                                        <AlertCircle size={14} />
+                                    </div>
+                                    Como executar o exercício
+                                </div>
+                                {showInstructions ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                            </button>
+                            {showInstructions && (
+                                <div className="p-4 pt-0 text-xs text-zinc-400 leading-relaxed bg-black/20 italic">
+                                    {currentExercise.exercise?.instructions || "Nenhuma instrução específica fornecida. Mantenha a postura correta e respiração controlada."}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Tracker Inputs */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-zinc-500 uppercase ml-1 flex justify-between items-center">
+                                    Carga (kg)
+                                    <span className="text-orange-500/60 lowercase italic">Referência: {currentExercise.weight || "0"}kg</span>
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        value={setValues.weight}
+                                        onChange={(e) => setSetValues(prev => ({ ...prev, weight: e.target.value }))}
+                                        className="w-full h-16 rounded-2xl bg-zinc-900 border-none px-6 text-xl font-black text-white outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                                        placeholder="0,0"
+                                    />
+                                    <span className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-500 font-bold uppercase text-xs">kg</span>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-zinc-500 uppercase ml-1 flex justify-between items-center">
+                                    Repetições
+                                    <span className="text-orange-500/60 lowercase italic">Meta: {currentExercise.reps || "12"}</span>
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        value={setValues.reps}
+                                        onChange={(e) => setSetValues(prev => ({ ...prev, reps: e.target.value }))}
+                                        className="w-full h-16 rounded-2xl bg-zinc-900 border-none px-6 text-xl font-black text-white outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                                        placeholder="0"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Series dots */}
+                        <div className="space-y-3">
+                            <p className="text-[10px] font-black text-zinc-500 uppercase ml-1">Progresso das Séries</p>
+                            <div className="flex gap-4">
+                                {Array.from({ length: currentExercise.sets || 3 }).map((_, i) => {
+                                    const execution = currentExercise.executions?.find((e: any) => e.setNumber === i + 1);
+                                    const isCurrent = currentSetIdx === i;
+                                    return (
+                                        <div
+                                            key={i}
+                                            className={`flex-1 h-12 rounded-xl flex items-center justify-center gap-2 border transition-all ${execution ? 'bg-orange-500 border-orange-500 text-white' :
+                                                isCurrent ? 'bg-orange-500/10 border-orange-500 text-orange-500' :
+                                                    'bg-zinc-900 border-white/5 text-zinc-600'
+                                                }`}
+                                        >
+                                            <span className="text-xs font-black">{i + 1}º</span>
+                                            {execution && <CheckCircle2 size={12} />}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="space-y-3 pt-4">
+                            <button
+                                onClick={handleSaveSet}
+                                disabled={isSavingSet}
+                                className="w-full h-16 rounded-2xl bg-[#ff3d00] text-white font-black text-sm uppercase shadow-2xl shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50"
+                            >
+                                {isSavingSet ? "Salvando..." : "Finalizar série"}
+                            </button>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    onClick={() => {
+                                        if (currentExerciseIdx > 0) {
+                                            setCurrentExerciseIdx(prev => prev - 1);
+                                            setCurrentSetIdx(0);
+                                        }
+                                    }}
+                                    className="h-14 rounded-xl bg-zinc-900 border border-white/5 text-[10px] font-black uppercase text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-2"
+                                >
+                                    <RotateCcw size={14} /> Voltar Anterior
+                                </button>
+                                <button
+                                    className="h-14 rounded-xl bg-zinc-900 border border-white/5 text-[10px] font-black uppercase text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-2"
+                                >
+                                    <ArrowRightLeft size={14} /> Alterar exercício
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={() => router.push("/dashboard/treinos")}
+                                className="w-full p-4 text-xs font-black text-red-500/60 uppercase hover:text-red-500 transition-all text-center mt-4"
+                            >
+                                Abandonar exercício
+                            </button>
+                        </div>
+                    </div>
+                </main>
             </div>
         );
     }
