@@ -186,20 +186,20 @@ export default function WorkoutDetailPage() {
                     </div>
 
                     {/* Content Section */}
-                    <div className="p-6 space-y-8 max-w-2xl mx-auto">
+                    <div className="p-4 space-y-4 max-w-2xl mx-auto">
                         {/* Technical Instructions */}
-                        <div className="rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+                        <div className="rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                             <button
                                 onClick={() => setShowInstructions(!showInstructions)}
-                                className="w-full px-5 py-4 flex items-center justify-between group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all"
+                                className="w-full px-4 py-3 flex items-center justify-between group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
-                                        <AlertCircle size={16} />
+                                    <div className="w-7 h-7 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                                        <AlertCircle size={14} />
                                     </div>
-                                    <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Como executar</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Como executar</span>
                                 </div>
-                                {showInstructions ? <ChevronUp size={18} className="text-zinc-400" /> : <ChevronDown size={18} className="text-zinc-400" />}
+                                {showInstructions ? <ChevronUp size={16} className="text-zinc-400" /> : <ChevronDown size={16} className="text-zinc-400" />}
                             </button>
                             {showInstructions && (
                                 <div className="px-5 pb-5 pt-1 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
@@ -222,22 +222,22 @@ export default function WorkoutDetailPage() {
                                         type="number"
                                         value={setValues.weight}
                                         onChange={(e) => setSetValues(prev => ({ ...prev, weight: e.target.value }))}
-                                        className="w-full h-20 rounded-3xl bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-brand-primary/30 px-6 text-2xl font-black text-zinc-900 dark:text-white outline-none shadow-sm dark:shadow-none transition-all text-center"
+                                        className="w-full h-14 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-brand-primary/30 px-4 text-xl font-black text-zinc-900 dark:text-white outline-none shadow-sm dark:shadow-none transition-all text-center"
                                         placeholder="0,0"
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest ml-1 flex flex-col gap-1">
+                            <div className="space-y-2">
+                                <label className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest ml-1 flex flex-col">
                                     <span>Repetições</span>
-                                    <span className="text-brand-primary text-[9px] normal-case font-medium opacity-80 italic">Meta: {currentExercise.reps || "12"}</span>
+                                    <span className="text-brand-primary text-[8px] normal-case font-medium opacity-80 italic">Meta: {currentExercise.reps || "12"}</span>
                                 </label>
                                 <div className="relative group">
                                     <input
                                         type="number"
                                         value={setValues.reps}
                                         onChange={(e) => setSetValues(prev => ({ ...prev, reps: e.target.value }))}
-                                        className="w-full h-20 rounded-3xl bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-brand-primary/30 px-6 text-2xl font-black text-zinc-900 dark:text-white outline-none shadow-sm dark:shadow-none transition-all text-center"
+                                        className="w-full h-14 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-brand-primary/30 px-4 text-xl font-black text-zinc-900 dark:text-white outline-none shadow-sm dark:shadow-none transition-all text-center"
                                         placeholder="0"
                                     />
                                 </div>
@@ -254,13 +254,13 @@ export default function WorkoutDetailPage() {
                                     return (
                                         <div
                                             key={i}
-                                            className={`flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 border transition-all duration-300 ${execution ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20' :
+                                            className={`flex-1 h-12 rounded-xl flex items-center justify-center gap-2 border transition-all duration-300 ${execution ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20' :
                                                 isCurrent ? 'bg-brand-primary/10 border-brand-primary text-brand-primary shadow-lg shadow-brand-primary/5' :
                                                     'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400'
                                                 }`}
                                         >
-                                            <span className="text-[11px] font-extrabold uppercase">{i + 1}ª</span>
-                                            {execution && <CheckCircle2 size={14} className="animate-in zoom-in duration-300" />}
+                                            <span className="text-[10px] font-extrabold uppercase">{i + 1}ª</span>
+                                            {execution && <CheckCircle2 size={12} className="animate-in zoom-in duration-300" />}
                                         </div>
                                     );
                                 })}
@@ -268,16 +268,16 @@ export default function WorkoutDetailPage() {
                         </div>
 
                         {/* Premium Action Buttons */}
-                        <div className="space-y-4 pt-4">
+                        <div className="space-y-3 pt-2">
                             <button
                                 onClick={handleSaveSet}
                                 disabled={isSavingSet}
-                                className="w-full h-20 rounded-3xl premium-gradient text-white font-extrabold text-sm uppercase tracking-widest shadow-xl shadow-brand-primary/20 active:scale-95 transition-all disabled:opacity-50 ring-4 ring-white dark:ring-zinc-950 border border-white/20"
+                                className="w-full h-16 rounded-2xl premium-gradient text-white font-extrabold text-xs uppercase tracking-widest shadow-lg shadow-brand-primary/20 active:scale-95 transition-all disabled:opacity-50 border border-white/20"
                             >
                                 {isSavingSet ? "Salvando..." : "Finalizar série"}
                             </button>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-3">
                                 <button
                                     onClick={() => {
                                         if (currentExerciseIdx > 0) {
@@ -285,20 +285,20 @@ export default function WorkoutDetailPage() {
                                             setCurrentSetIdx(0);
                                         }
                                     }}
-                                    className="h-16 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[10px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-brand-primary dark:hover:text-brand-primary hover:border-brand-primary transition-all flex items-center justify-center gap-2 shadow-sm"
+                                    className="h-12 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-brand-primary transition-all flex items-center justify-center gap-2 shadow-sm"
                                 >
-                                    <RotateCcw size={16} /> Voltar Anterior
+                                    <RotateCcw size={14} /> Voltar
                                 </button>
                                 <button
-                                    className="h-16 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[10px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-brand-primary dark:hover:text-brand-primary hover:border-brand-primary transition-all flex items-center justify-center gap-2 shadow-sm"
+                                    className="h-12 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-brand-primary transition-all flex items-center justify-center gap-2 shadow-sm"
                                 >
-                                    <ArrowRightLeft size={16} /> Alterar
+                                    <ArrowRightLeft size={14} /> Alterar
                                 </button>
                             </div>
 
                             <button
                                 onClick={() => router.push("/dashboard/treinos")}
-                                className="w-full py-4 text-[10px] font-extrabold text-red-400/80 uppercase tracking-[0.2em] hover:text-red-500 transition-all text-center"
+                                className="w-full py-2 text-[9px] font-extrabold text-red-400/80 uppercase tracking-widest hover:text-red-500 transition-all text-center"
                             >
                                 Abandonar treino
                             </button>
