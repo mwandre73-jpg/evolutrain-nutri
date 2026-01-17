@@ -6,6 +6,7 @@ import { getAthletes, getAthleteAction } from "@/app/actions/athletes";
 import { saveWorkoutAction, getWorkoutTemplatesAction, saveWorkoutTemplateAction, updateWorkoutTemplateAction, checkAthletesWorkoutsAction } from "@/app/actions/workouts";
 import { getExercisesAction } from "@/app/actions/exercises";
 import { kmhParaPace, calcularLAN, calcularVelocidadePorClassificacao, ZONAS_CONFIG } from "@/lib/calculos";
+import SearchableExerciseSelect from "@/components/dashboard/SearchableExerciseSelect";
 
 
 export default function NovaPlanilhaPage() {
@@ -599,25 +600,18 @@ export default function NovaPlanilhaPage() {
                                 <div className="flex gap-4 items-end">
                                     <div className="flex-1 space-y-2">
                                         <label className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Adicionar Exercício</label>
-                                        <select
-                                            value={selectedExercise}
-                                            onChange={(e) => setSelectedExercise(e.target.value)}
-                                            className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800"
-                                        >
-                                            <option value="">Escolher exercício...</option>
-                                            {libraryExercises
-                                                .filter(ex => {
-                                                    if (!bodyPart) return true;
-                                                    const group = bodyPart === 'SUPERIORES' ?
-                                                        ["Peito", "Costas", "Ombros", "Bíceps", "Tríceps", "Geral", "Superiores", "Core"] :
-                                                        ["Quadríceps", "Posterior", "Glúteos", "Adutores", "Panturrilha", "Inferiores"];
-                                                    return group.includes(ex.muscles);
-                                                })
-                                                .map(ex => (
-                                                    <option key={ex.id} value={ex.name}>{ex.name}</option>
-                                                ))
-                                            }
-                                        </select>
+                                        <SearchableExerciseSelect
+                                            exercises={libraryExercises.filter(ex => {
+                                                if (!bodyPart) return true;
+                                                const group = bodyPart === 'SUPERIORES' ?
+                                                    ["Peito", "Costas", "Ombros", "Bíceps", "Tríceps", "Geral", "Superiores", "Core"] :
+                                                    ["Quadríceps", "Posterior", "Glúteos", "Adutores", "Panturrilha", "Inferiores"];
+                                                return group.includes(ex.muscles);
+                                            })}
+                                            selectedExerciseName={selectedExercise}
+                                            onSelect={(name) => setSelectedExercise(name)}
+                                            placeholder="Escolher exercício..."
+                                        />
                                     </div>
                                     <div className="w-24 space-y-2">
                                         <label className="text-sm font-bold text-zinc-700 dark:text-zinc-300">% Carga</label>

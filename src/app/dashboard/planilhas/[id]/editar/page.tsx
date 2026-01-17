@@ -6,6 +6,7 @@ import { getAthleteAction } from "@/app/actions/athletes";
 import { getWorkoutDetailAction, updateWorkoutAction } from "@/app/actions/workouts";
 import { getExercisesAction } from "@/app/actions/exercises";
 import { kmhParaPace, calcularVelocidadePorClassificacao, ZONAS_CONFIG } from "@/lib/calculos";
+import SearchableExerciseSelect from "@/components/dashboard/SearchableExerciseSelect";
 
 
 export default function EditarPlanilhaPage() {
@@ -237,19 +238,18 @@ export default function EditarPlanilhaPage() {
                         </select>
                         {bodyPart && (
                             <div className="flex gap-2">
-                                <select value={selectedExercise} onChange={(e) => setSelectedExercise(e.target.value)} className="flex-1 rounded-2xl bg-zinc-50 border-none px-4 py-3 dark:bg-zinc-800">
-                                    <option value="">Exercício...</option>
-                                    {libraryExercises
-                                        .filter(ex => {
-                                            if (!bodyPart) return true;
-                                            const group = bodyPart === 'SUPERIORES' ?
-                                                ["Peito", "Costas", "Ombros", "Bíceps", "Tríceps", "Geral", "Superiores", "Core"] :
-                                                ["Quadríceps", "Posterior", "Glúteos", "Adutores", "Panturrilha", "Inferiores"];
-                                            return group.includes(ex.muscles);
-                                        })
-                                        .map(ex => <option key={ex.id} value={ex.name}>{ex.name}</option>)
-                                    }
-                                </select>
+                                <SearchableExerciseSelect
+                                    exercises={libraryExercises.filter(ex => {
+                                        if (!bodyPart) return true;
+                                        const group = bodyPart === 'SUPERIORES' ?
+                                            ["Peito", "Costas", "Ombros", "Bíceps", "Tríceps", "Geral", "Superiores", "Core"] :
+                                            ["Quadríceps", "Posterior", "Glúteos", "Adutores", "Panturrilha", "Inferiores"];
+                                        return group.includes(ex.muscles);
+                                    })}
+                                    selectedExerciseName={selectedExercise}
+                                    onSelect={(name) => setSelectedExercise(name)}
+                                    placeholder="Exercício..."
+                                />
                                 <button onClick={handleAddExercise} className="px-6 py-3 bg-brand-primary text-white rounded-2xl font-bold">Add</button>
                             </div>
                         )}
