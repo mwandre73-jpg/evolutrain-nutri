@@ -437,7 +437,7 @@ export async function getStudentWorkoutsAction() {
 
         const workouts = await prisma.workouts.findMany({
             where: { athleteProfileId: athlete.id },
-            orderBy: { date: 'desc' }
+            orderBy: { date: 'asc' }
         });
 
         return workouts.map((w: any) => ({
