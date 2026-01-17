@@ -143,105 +143,110 @@ export default function WorkoutDetailPage() {
 
     if (isBodybuilding && currentExercise) {
         return (
-            <div className="fixed inset-0 z-50 bg-[#0a0a0a] flex flex-col animate-slide-up text-white overflow-hidden">
-                {/* Dark Header */}
-                <header className="p-4 flex items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-xl">
+            <div className="fixed inset-0 z-50 bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-slide-up overflow-hidden">
+                {/* EvoluNutri Header */}
+                <header className="px-6 py-4 flex items-center justify-between bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-10">
                     <button
                         onClick={() => router.push("/dashboard/treinos")}
-                        className="p-2 rounded-xl bg-white/5 text-white/60 hover:text-white transition-all"
+                        className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all shadow-sm"
                     >
-                        <X size={24} />
+                        <X size={20} />
                     </button>
-                    <div className="text-center">
-                        <h2 className="text-orange-500 font-extrabold uppercase text-sm tracking-widest">{currentExercise.exercise?.name || "Exercício"}</h2>
-                        <p className="text-[10px] text-zinc-500 font-black tracking-tighter uppercase mt-0.5">
-                            Série {currentSetIdx + 1} de {currentExercise.sets || 3}
-                        </p>
+                    <div className="text-center flex-1">
+                        <h2 className="text-zinc-900 dark:text-white font-extrabold uppercase text-xs tracking-[0.2em]">{currentExercise.exercise?.name || "Exercício"}</h2>
+                        <div className="flex items-center justify-center gap-2 mt-1">
+                            <span className="h-1 w-1 rounded-full bg-brand-primary animate-pulse"></span>
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
+                                Série {currentSetIdx + 1} de {currentExercise.sets || 3}
+                            </p>
+                        </div>
                     </div>
-                    <div className="w-10"></div> {/* Spacer for symmetry */}
+                    <div className="w-10"></div>
                 </header>
 
                 <main className="flex-1 overflow-y-auto pb-32">
-                    {/* Video Loop Section */}
-                    <div className="relative aspect-video w-full bg-zinc-900 overflow-hidden">
+                    {/* Video Section with Glassmorphism */}
+                    <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-900 overflow-hidden shadow-inner">
                         {currentExercise.exercise?.videoUrl ? (
                             <video
                                 src={currentExercise.exercise.videoUrl}
                                 autoPlay muted loop playsInline
-                                className="w-full h-full object-cover shadow-2xl"
+                                className="w-full h-full object-cover"
                             />
                         ) : (
-                            <div className="w-full h-full flex flex-col items-center justify-center text-zinc-700 bg-zinc-900">
-                                <Play size={48} className="mb-4 opacity-20" />
-                                <p className="text-xs uppercase font-black">Vídeo não disponível</p>
+                            <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400">
+                                <Play size={40} className="mb-3 opacity-20" />
+                                <p className="text-[10px] uppercase font-bold tracking-widest">Vídeo de instrução</p>
                             </div>
                         )}
-                        <div className="absolute bottom-4 right-4 p-2 rounded-lg bg-black/60 backdrop-blur-md border border-white/10">
-                            <Maximize2 size={16} className="text-white/60" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+                        <div className="absolute bottom-4 right-4 p-2 rounded-xl bg-white/20 backdrop-blur-md border border-white/10 text-white shadow-lg">
+                            <Maximize2 size={14} />
                         </div>
                     </div>
 
                     {/* Content Section */}
-                    <div className="p-6 space-y-6">
-                        {/* How to execute dropdown */}
-                        <div className="rounded-2xl bg-zinc-900 border border-white/5 overflow-hidden">
+                    <div className="p-6 space-y-8 max-w-2xl mx-auto">
+                        {/* Technical Instructions */}
+                        <div className="rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                             <button
                                 onClick={() => setShowInstructions(!showInstructions)}
-                                className="w-full p-4 flex items-center justify-between group hover:bg-white/5 transition-all text-blue-400 font-bold text-xs uppercase"
+                                className="w-full px-5 py-4 flex items-center justify-between group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
-                                        <AlertCircle size={14} />
+                                    <div className="w-8 h-8 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                                        <AlertCircle size={16} />
                                     </div>
-                                    Como executar o exercício
+                                    <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Como executar</span>
                                 </div>
-                                {showInstructions ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                                {showInstructions ? <ChevronUp size={18} className="text-zinc-400" /> : <ChevronDown size={18} className="text-zinc-400" />}
                             </button>
                             {showInstructions && (
-                                <div className="p-4 pt-0 text-xs text-zinc-400 leading-relaxed bg-black/20 italic">
-                                    {currentExercise.exercise?.instructions || "Nenhuma instrução específica fornecida. Mantenha a postura correta e respiração controlada."}
+                                <div className="px-5 pb-5 pt-1 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+                                    <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/50 italic border border-zinc-100 dark:border-zinc-800">
+                                        {currentExercise.exercise?.instructions || "Nenhuma instrução específica fornecida. Mantenha a postura correta e respiração controlada."}
+                                    </div>
                                 </div>
                             )}
                         </div>
 
-                        {/* Tracker Inputs */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-zinc-500 uppercase ml-1 flex justify-between items-center">
-                                    Carga (kg)
-                                    <span className="text-orange-500/60 lowercase italic">Referência: {currentExercise.weight || "0"}kg</span>
+                        {/* Improved Tracker Inputs */}
+                        <div className="grid grid-cols-2 gap-5">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest ml-1 flex flex-col gap-1">
+                                    <span>Carga (kg)</span>
+                                    <span className="text-brand-primary text-[9px] normal-case font-medium opacity-80 italic">Ref: {currentExercise.weight || "0"}kg</span>
                                 </label>
-                                <div className="relative">
+                                <div className="relative group">
                                     <input
                                         type="number"
                                         value={setValues.weight}
                                         onChange={(e) => setSetValues(prev => ({ ...prev, weight: e.target.value }))}
-                                        className="w-full h-16 rounded-2xl bg-zinc-900 border-none px-6 text-xl font-black text-white outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                                        className="w-full h-20 rounded-3xl bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-brand-primary/30 px-6 text-2xl font-black text-zinc-900 dark:text-white outline-none shadow-sm dark:shadow-none transition-all text-center"
                                         placeholder="0,0"
                                     />
-                                    <span className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-500 font-bold uppercase text-xs">kg</span>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-zinc-500 uppercase ml-1 flex justify-between items-center">
-                                    Repetições
-                                    <span className="text-orange-500/60 lowercase italic">Meta: {currentExercise.reps || "12"}</span>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest ml-1 flex flex-col gap-1">
+                                    <span>Repetições</span>
+                                    <span className="text-brand-primary text-[9px] normal-case font-medium opacity-80 italic">Meta: {currentExercise.reps || "12"}</span>
                                 </label>
-                                <div className="relative">
+                                <div className="relative group">
                                     <input
                                         type="number"
                                         value={setValues.reps}
                                         onChange={(e) => setSetValues(prev => ({ ...prev, reps: e.target.value }))}
-                                        className="w-full h-16 rounded-2xl bg-zinc-900 border-none px-6 text-xl font-black text-white outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                                        className="w-full h-20 rounded-3xl bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-brand-primary/30 px-6 text-2xl font-black text-zinc-900 dark:text-white outline-none shadow-sm dark:shadow-none transition-all text-center"
                                         placeholder="0"
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        {/* Series dots */}
-                        <div className="space-y-3">
-                            <p className="text-[10px] font-black text-zinc-500 uppercase ml-1">Progresso das Séries</p>
+                        {/* Progress Dots with Brand Colors */}
+                        <div className="space-y-4">
+                            <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest ml-1">Progresso das Séries</p>
                             <div className="flex gap-4">
                                 {Array.from({ length: currentExercise.sets || 3 }).map((_, i) => {
                                     const execution = currentExercise.executions?.find((e: any) => e.setNumber === i + 1);
@@ -249,30 +254,30 @@ export default function WorkoutDetailPage() {
                                     return (
                                         <div
                                             key={i}
-                                            className={`flex-1 h-12 rounded-xl flex items-center justify-center gap-2 border transition-all ${execution ? 'bg-orange-500 border-orange-500 text-white' :
-                                                isCurrent ? 'bg-orange-500/10 border-orange-500 text-orange-500' :
-                                                    'bg-zinc-900 border-white/5 text-zinc-600'
+                                            className={`flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 border transition-all duration-300 ${execution ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20' :
+                                                isCurrent ? 'bg-brand-primary/10 border-brand-primary text-brand-primary shadow-lg shadow-brand-primary/5' :
+                                                    'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400'
                                                 }`}
                                         >
-                                            <span className="text-xs font-black">{i + 1}º</span>
-                                            {execution && <CheckCircle2 size={12} />}
+                                            <span className="text-[11px] font-extrabold uppercase">{i + 1}ª</span>
+                                            {execution && <CheckCircle2 size={14} className="animate-in zoom-in duration-300" />}
                                         </div>
                                     );
                                 })}
                             </div>
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="space-y-3 pt-4">
+                        {/* Premium Action Buttons */}
+                        <div className="space-y-4 pt-4">
                             <button
                                 onClick={handleSaveSet}
                                 disabled={isSavingSet}
-                                className="w-full h-16 rounded-2xl bg-[#ff3d00] text-white font-black text-sm uppercase shadow-2xl shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50"
+                                className="w-full h-20 rounded-3xl premium-gradient text-white font-extrabold text-sm uppercase tracking-widest shadow-xl shadow-brand-primary/20 active:scale-95 transition-all disabled:opacity-50 ring-4 ring-white dark:ring-zinc-950 border border-white/20"
                             >
                                 {isSavingSet ? "Salvando..." : "Finalizar série"}
                             </button>
 
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-4">
                                 <button
                                     onClick={() => {
                                         if (currentExerciseIdx > 0) {
@@ -280,22 +285,22 @@ export default function WorkoutDetailPage() {
                                             setCurrentSetIdx(0);
                                         }
                                     }}
-                                    className="h-14 rounded-xl bg-zinc-900 border border-white/5 text-[10px] font-black uppercase text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-2"
+                                    className="h-16 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[10px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-brand-primary dark:hover:text-brand-primary hover:border-brand-primary transition-all flex items-center justify-center gap-2 shadow-sm"
                                 >
-                                    <RotateCcw size={14} /> Voltar Anterior
+                                    <RotateCcw size={16} /> Voltar Anterior
                                 </button>
                                 <button
-                                    className="h-14 rounded-xl bg-zinc-900 border border-white/5 text-[10px] font-black uppercase text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-2"
+                                    className="h-16 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[10px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-brand-primary dark:hover:text-brand-primary hover:border-brand-primary transition-all flex items-center justify-center gap-2 shadow-sm"
                                 >
-                                    <ArrowRightLeft size={14} /> Alterar exercício
+                                    <ArrowRightLeft size={16} /> Alterar
                                 </button>
                             </div>
 
                             <button
                                 onClick={() => router.push("/dashboard/treinos")}
-                                className="w-full p-4 text-xs font-black text-red-500/60 uppercase hover:text-red-500 transition-all text-center mt-4"
+                                className="w-full py-4 text-[10px] font-extrabold text-red-400/80 uppercase tracking-[0.2em] hover:text-red-500 transition-all text-center"
                             >
-                                Abandonar exercício
+                                Abandonar treino
                             </button>
                         </div>
                     </div>
