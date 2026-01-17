@@ -342,9 +342,9 @@ export async function markWorkoutAsCompletedAction(id: string) {
         revalidatePath("/dashboard/treinos");
         revalidatePath("/dashboard/planilhas");
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error marking workout as completed:", error);
-        return { success: false };
+        return { success: false, error: error.message || "Erro ao concluir treino" };
     }
 }
 
@@ -357,9 +357,9 @@ export async function deleteWorkoutAction(id: string) {
 
         revalidatePath("/dashboard/planilhas");
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error deleting workout:", error);
-        return { success: false };
+        return { success: false, error: error.message || "Erro ao excluir treino" };
     }
 }
 
@@ -380,9 +380,9 @@ export async function saveWorkoutFeedbackAction(id: string, data: { perception: 
         revalidatePath("/dashboard/treinos");
         revalidatePath("/dashboard/planilhas");
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error saving workout feedback:", error);
-        return { success: false };
+        return { success: false, error: error.message || "Erro ao salvar feedback" };
     }
 }
 
@@ -414,9 +414,9 @@ export async function saveWorkoutTemplateAction(data: any) {
         });
 
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error saving template:", error);
-        return { success: false };
+        return { success: false, error: error.message || "Erro ao salvar template" };
     }
 }
 
@@ -431,9 +431,9 @@ export async function updateWorkoutTemplateAction(id: string, data: any) {
         });
 
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error updating template:", error);
-        return { success: false };
+        return { success: false, error: error.message || "Erro ao atualizar template" };
     }
 }
 
@@ -500,9 +500,9 @@ export async function markFeedbackAsReadAction(id: string) {
 
         revalidatePath("/dashboard");
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error marking feedback as read:", error);
-        return { success: false };
+        return { success: false, error: error.message || "Erro ao marcar como lido" };
     }
 }
 
@@ -545,8 +545,8 @@ export async function saveSetExecutionAction(data: {
         }
 
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error saving set execution:", error);
-        return { success: false };
+        return { success: false, error: error.message || "Erro ao salvar execução" };
     }
 }
