@@ -67,15 +67,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex h-screen bg-zinc-50 dark:bg-zinc-950">
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-white shadow-xl transition-transform duration-300 ease-in-out dark:bg-zinc-900 lg:sticky lg:top-0 lg:h-screen lg:block lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed inset-y-0 left-0 z-50 w-56 transform bg-white shadow-xl transition-transform duration-300 ease-in-out dark:bg-zinc-900 lg:sticky lg:top-0 lg:h-screen lg:block lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
             >
                 <div className="flex h-full flex-col">
-                    <div className="flex items-center gap-2 px-6 py-8">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg premium-gradient text-white font-bold">
+                    <div className="flex items-center gap-2 px-6 py-6">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg premium-gradient text-white font-bold text-xs">
                             E
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                        <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">
                             EvoluNutri
                         </span>
                     </div>
@@ -83,10 +83,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <nav className="flex-1 space-y-6 px-4 overflow-y-auto">
                         {menuSections.map((section) => (
                             <div key={section.title} className="space-y-1">
-                                <h3 className="px-4 text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
+                                <h3 className="px-4 text-[9px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
                                     {section.title}
                                 </h3>
-                                <div className="space-y-1">
+                                <div className="space-y-0.5">
                                     {section.items.map((item) => {
                                         const isActive = pathname === item.href;
                                         return (
@@ -94,12 +94,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                                 key={item.href}
                                                 href={item.href}
                                                 onClick={() => setSidebarOpen(false)}
-                                                className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${isActive
+                                                className={`flex items-center gap-2.5 rounded-xl px-4 py-2 text-[13px] font-medium transition-all ${isActive
                                                     ? "premium-gradient text-white shadow-lg shadow-brand-primary/20"
                                                     : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
                                                     }`}
                                             >
-                                                <span className="text-lg">{item.icon}</span>
+                                                <span className="text-base">{item.icon}</span>
                                                 {item.name}
                                             </Link>
                                         );
@@ -131,9 +131,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         </div>
                         <button
                             onClick={() => signOut({ callbackUrl: "/" })}
-                            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-600 transition-all hover:bg-red-50 dark:hover:bg-red-900/10"
+                            className="flex w-full items-center gap-2.5 rounded-xl px-4 py-2.5 text-[13px] font-medium text-red-600 transition-all hover:bg-red-50 dark:hover:bg-red-900/10"
                         >
-                            <span>🚪</span>
+                            <span className="text-base">🚪</span>
                             Sair
                         </button>
                     </div>
@@ -158,7 +158,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     </button>
                 </header>
 
-                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-8">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:px-10 lg:py-8">
                     {children}
                 </main>
             </div>

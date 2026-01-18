@@ -138,10 +138,10 @@ export default function ExerciseLibraryPage() {
             <div className="space-y-8 animate-slide-up">
                 <header className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">
+                        <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-3xl">
                             Biblioteca de <span className="text-gradient">Exercícios</span>
                         </h1>
-                        <p className="mt-2 text-zinc-600 dark:text-zinc-400 font-medium">
+                        <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 font-medium">
                             Demonstrações em vídeo com loop infinito para seus atletas.
                         </p>
                     </div>
@@ -183,11 +183,11 @@ export default function ExerciseLibraryPage() {
                             filteredExercises.map((ex) => (
                                 <div
                                     key={ex.id}
-                                    className="group relative rounded-3xl bg-white p-4 shadow-sm ring-1 ring-zinc-200 transition-all hover:shadow-md dark:bg-zinc-900 dark:ring-zinc-800"
+                                    className="group relative rounded-3xl bg-white p-3.5 shadow-sm ring-1 ring-zinc-200 transition-all hover:shadow-md dark:bg-zinc-900 dark:ring-zinc-800"
                                     onMouseEnter={() => setHoveredId(ex.id)}
                                     onMouseLeave={() => setHoveredId(null)}
                                 >
-                                    <div className="aspect-square w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-4">
+                                    <div className="aspect-square w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-3">
                                         {ex.videoUrl ? (
                                             <>
                                                 {hoveredId === ex.id ? (
@@ -240,8 +240,8 @@ export default function ExerciseLibraryPage() {
                                             </button>
                                         </div>
                                     </div>
-                                    <h3 className="font-bold text-zinc-900 dark:text-white mb-1">{ex.name}</h3>
-                                    <p className="text-xs text-zinc-500 uppercase font-black tracking-wider text-brand-primary">
+                                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white mb-0.5 line-clamp-1">{ex.name}</h3>
+                                    <p className="text-[10px] text-zinc-500 uppercase font-black tracking-wider text-brand-primary">
                                         {ex.muscles || "Geral"}
                                     </p>
                                 </div>
