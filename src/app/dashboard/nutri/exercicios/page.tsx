@@ -120,6 +120,14 @@ export default function ExerciseLibraryPage() {
         setIsModalOpen(true);
     };
 
+    const getThumbnail = (ex: any) => {
+        if (ex.thumbnailUrl) return ex.thumbnailUrl;
+        if (ex.videoUrl?.includes("cloudinary.com")) {
+            return ex.videoUrl.replace(/\.[^/.]+$/, ".jpg");
+        }
+        return null;
+    };
+
     const filteredExercises = exercises.filter(ex =>
         ex.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         ex.muscles?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -179,7 +187,7 @@ export default function ExerciseLibraryPage() {
                                     onMouseEnter={() => setHoveredId(ex.id)}
                                     onMouseLeave={() => setHoveredId(null)}
                                 >
-                                    <div className="aspect-[4/3] w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-4">
+                                    <div className="aspect-[4/5] w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-4">
                                         {ex.videoUrl ? (
                                             <>
                                                 {hoveredId === ex.id ? (
@@ -193,9 +201,9 @@ export default function ExerciseLibraryPage() {
                                                     />
                                                 ) : (
                                                     <div className="h-full w-full relative">
-                                                        {ex.thumbnailUrl ? (
+                                                        {getThumbnail(ex) ? (
                                                             <img
-                                                                src={ex.thumbnailUrl}
+                                                                src={getThumbnail(ex)}
                                                                 alt={ex.name}
                                                                 className="h-full w-full object-cover object-top"
                                                             />
@@ -204,8 +212,8 @@ export default function ExerciseLibraryPage() {
                                                                 <Play className="text-zinc-300" size={32} />
                                                             </div>
                                                         )}
-                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/5">
-                                                            <div className="p-3 bg-white/20 backdrop-blur-md rounded-full">
+                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                                                            <div className="p-3 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30">
                                                                 <Play className="text-white fill-white ml-0.5" size={24} />
                                                             </div>
                                                         </div>
