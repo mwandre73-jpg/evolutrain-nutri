@@ -110,21 +110,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     </nav>
 
                     <div className="border-t border-zinc-100 p-4 dark:border-zinc-800">
-                        <div className="mb-4 flex items-center gap-3 px-2">
-                            <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                        <div className="mb-4 flex items-center gap-2.5 px-2">
+                            <div className="h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
                                 {session?.user?.image ? (
                                     <img src={session.user.image} alt="" className="h-full w-full object-cover" />
                                 ) : (
-                                    <div className="flex h-full w-full items-center justify-center text-lg font-bold text-zinc-400">
+                                    <div className="flex h-full w-full items-center justify-center text-base font-bold text-zinc-400">
                                         {session?.user?.name?.[0]?.toUpperCase() || "U"}
                                     </div>
                                 )}
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-semibold text-zinc-900 dark:text-white">
+                                <p className="truncate text-[13px] font-semibold text-zinc-900 dark:text-white">
                                     {session?.user?.name || "Usuário"}
                                 </p>
-                                <p className="truncate text-xs text-zinc-500">
+                                <p className="truncate text-[10px] text-zinc-500">
                                     {session?.user?.email}
                                 </p>
                             </div>
@@ -158,8 +158,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     </button>
                 </header>
 
-                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:px-10 lg:py-8">
-                    {children}
+                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:px-16 lg:py-8">
+                    <div className="max-w-7xl mx-auto">
+                        {children}
+                    </div>
                 </main>
             </div>
 
