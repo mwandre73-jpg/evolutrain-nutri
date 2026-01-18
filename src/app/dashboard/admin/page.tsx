@@ -153,17 +153,17 @@ export default function AdminPage() {
 
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in transition-all">
-                    <div className="relative w-full max-w-md rounded-3xl bg-white p-6 md:p-8 shadow-2xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 animate-slide-up">
+                    <div className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 animate-slide-up custom-scrollbar">
                         <button
                             onClick={() => setIsModalOpen(false)}
                             className="absolute right-6 top-6 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
                         >
-                            <X size={24} />
+                            <X size={20} />
                         </button>
 
-                        <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">Novo Treinador</h2>
-                        <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-6">
-                            Cadastre um novo treinador. A senha padrão será <span className="font-bold text-brand-primary">123456</span>.
+                        <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-2">Novo Treinador</h2>
+                        <p className="text-zinc-500 dark:text-zinc-400 text-xs mb-6 font-medium">
+                            Cadastre um novo treinador. Senha padrão: <span className="font-bold text-brand-primary">123456</span>
                         </p>
 
                         <form onSubmit={handleCreate} className="space-y-4">

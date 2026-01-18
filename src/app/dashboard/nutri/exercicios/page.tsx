@@ -213,14 +213,14 @@ export default function ExerciseLibraryPage() {
             </div>
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 animate-slide-up">
-                        <header className="flex items-center justify-between mb-8">
+                    <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 animate-slide-up custom-scrollbar">
+                        <header className="flex items-center justify-between mb-6">
                             <div>
-                                <h2 className="text-2xl font-bold">{editingId ? "Editar Exercício" : "Novo Exercício"}</h2>
-                                <p className="text-xs text-zinc-500 font-medium">Demonstração visual para o treino</p>
+                                <h2 className="text-xl font-bold">{editingId ? "Editar Exercício" : "Novo Exercício"}</h2>
+                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Demonstração visual</p>
                             </div>
                             <button onClick={() => setIsModalOpen(false)} className="p-2 rounded-xl text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
-                                <X size={24} />
+                                <X size={20} />
                             </button>
                         </header>
 
