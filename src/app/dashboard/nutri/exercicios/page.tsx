@@ -210,87 +210,86 @@ export default function ExerciseLibraryPage() {
                     </div>
                 )}
 
-                {/* Modal */}
-                {isModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                        <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 animate-slide-up">
-                            <header className="flex items-center justify-between mb-8">
-                                <div>
-                                    <h2 className="text-2xl font-bold">{editingId ? "Editar Exercício" : "Novo Exercício"}</h2>
-                                    <p className="text-xs text-zinc-500 font-medium">Demonstração visual para o treino</p>
-                                </div>
-                                <button onClick={() => setIsModalOpen(false)} className="p-2 rounded-xl text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
-                                    <X size={24} />
-                                </button>
-                            </header>
-
-                            <form onSubmit={handleSave} className="space-y-6">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-zinc-400 uppercase ml-1">Nome do Exercício</label>
-                                    <input
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold"
-                                        placeholder="Ex: Agachamento Livre"
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-zinc-400 uppercase ml-1">Músculos / Grupamento</label>
-                                    <input
-                                        value={formData.muscles}
-                                        onChange={(e) => setFormData({ ...formData, muscles: e.target.value })}
-                                        className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold"
-                                        placeholder="Ex: Quadríceps, Glúteos"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-zinc-400 uppercase ml-1">Como executar (Instruções)</label>
-                                    <textarea
-                                        value={formData.instructions}
-                                        onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-                                        className="w-full h-32 rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold resize-none"
-                                        placeholder="Descreva a técnica correta, postura e dicas de segurança..."
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-zinc-400 uppercase ml-1">Vídeo Demonstrativo</label>
-                                    <div
-                                        onClick={handleVideoUpload}
-                                        className="w-full aspect-video rounded-2xl bg-zinc-50 dark:bg-zinc-800 border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center gap-3 group hover:border-brand-primary transition-all cursor-pointer overflow-hidden relative"
-                                    >
-                                        {formData.videoUrl ? (
-                                            <>
-                                                <video src={formData.videoUrl} className="h-full w-full object-cover" />
-                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <p className="text-white text-xs font-black uppercase">Alterar Vídeo</p>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Video className="text-zinc-300 group-hover:text-brand-primary transition-colors" size={48} />
-                                                <div className="text-center">
-                                                    <p className="text-xs font-black text-zinc-500 uppercase">Clique para Upload HD</p>
-                                                    <p className="text-[10px] text-zinc-400 mt-1">MP4, MOV ou WebM (Max 50MB)</p>
-                                                </div>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={isSaving}
-                                    className="w-full rounded-2xl premium-gradient py-4 font-black text-white shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-4 disabled:opacity-50"
-                                >
-                                    {isSaving ? "SALVANDO..." : editingId ? "ATUALIZAR EXERCÍCIO" : "SALVAR EXERCÍCIO"}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                )}
             </div>
+            {isModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 animate-slide-up">
+                        <header className="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 className="text-2xl font-bold">{editingId ? "Editar Exercício" : "Novo Exercício"}</h2>
+                                <p className="text-xs text-zinc-500 font-medium">Demonstração visual para o treino</p>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="p-2 rounded-xl text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+                                <X size={24} />
+                            </button>
+                        </header>
+
+                        <form onSubmit={handleSave} className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-zinc-400 uppercase ml-1">Nome do Exercício</label>
+                                <input
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold"
+                                    placeholder="Ex: Agachamento Livre"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-zinc-400 uppercase ml-1">Músculos / Grupamento</label>
+                                <input
+                                    value={formData.muscles}
+                                    onChange={(e) => setFormData({ ...formData, muscles: e.target.value })}
+                                    className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold"
+                                    placeholder="Ex: Quadríceps, Glúteos"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-zinc-400 uppercase ml-1">Como executar (Instruções)</label>
+                                <textarea
+                                    value={formData.instructions}
+                                    onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+                                    className="w-full h-32 rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold resize-none"
+                                    placeholder="Descreva a técnica correta, postura e dicas de segurança..."
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-zinc-400 uppercase ml-1">Vídeo Demonstrativo</label>
+                                <div
+                                    onClick={handleVideoUpload}
+                                    className="w-full aspect-video rounded-2xl bg-zinc-50 dark:bg-zinc-800 border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center gap-3 group hover:border-brand-primary transition-all cursor-pointer overflow-hidden relative"
+                                >
+                                    {formData.videoUrl ? (
+                                        <>
+                                            <video src={formData.videoUrl} className="h-full w-full object-cover" />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <p className="text-white text-xs font-black uppercase">Alterar Vídeo</p>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Video className="text-zinc-300 group-hover:text-brand-primary transition-colors" size={48} />
+                                            <div className="text-center">
+                                                <p className="text-xs font-black text-zinc-500 uppercase">Clique para Upload HD</p>
+                                                <p className="text-[10px] text-zinc-400 mt-1">MP4, MOV ou WebM (Max 50MB)</p>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={isSaving}
+                                className="w-full rounded-2xl premium-gradient py-4 font-black text-white shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-4 disabled:opacity-50"
+                            >
+                                {isSaving ? "SALVANDO..." : editingId ? "ATUALIZAR EXERCÍCIO" : "SALVAR EXERCÍCIO"}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
             <Script src="https://upload-widget.cloudinary.com/global/all.js" strategy="afterInteractive" />
         </>
     );
