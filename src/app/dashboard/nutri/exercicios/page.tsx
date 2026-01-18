@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Play, Trash2, Edit2, X, Dumbbell, Loader2, Video } from "lucide-react";
+import { Plus, Search, Play, Trash2, Edit2, X, Dumbbell, Loader2, Video, Image as ImageIcon } from "lucide-react";
 import { getExercisesAction, saveExerciseAction, deleteExerciseAction } from "@/app/actions/exercises";
 import Script from "next/script";
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from "@/lib/cloudinary";
@@ -13,11 +13,13 @@ export default function ExerciseLibraryPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [hoveredId, setHoveredId] = useState<string | null>(null);
 
     const [formData, setFormData] = useState({
         name: "",
         muscles: "",
         videoUrl: "",
+        thumbnailUrl: "",
         instructions: ""
     });
 
@@ -32,27 +34,27 @@ export default function ExerciseLibraryPage() {
         setLoading(false);
     };
 
-    const handleVideoUpload = () => {
+    const handleUpload = (type: 'video' | 'image') => {
         if (!(window as any).cloudinary) return;
 
         (window as any).cloudinary.openUploadWidget({
             cloudName: CLOUDINARY_CLOUD_NAME,
             uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-            resourceType: 'video',
+            resourceType: type,
             sources: ['local', 'camera'],
             multiple: false,
-            clientAllowedFormats: ['mp4', 'mov', 'webm'],
-            maxFileSize: 50000000, // 50MB
+            clientAllowedFormats: type === 'video' ? ['mp4', 'mov', 'webm'] : ['jpg', 'png', 'webp', 'jpeg'],
+            maxFileSize: type === 'video' ? 50000000 : 5000000,
             styles: {
                 palette: {
                     window: "#FFFFFF",
                     windowBorder: "#90A0B3",
-                    tabIcon: "#F26522",
+                    tabIcon: "#10B981",
                     menuIcons: "#5A616A",
                     textDark: "#000000",
                     textLight: "#FFFFFF",
-                    link: "#F26522",
-                    action: "#FF620C",
+                    link: "#10B981",
+                    action: "#10B981",
                     inactiveTabIcon: "#0E2F5A",
                     error: "#F44235",
                     inProgress: "#0078FF",
@@ -62,10 +64,11 @@ export default function ExerciseLibraryPage() {
             }
         }, (error: any, result: any) => {
             if (!error && result && result.event === "success") {
-                setFormData(prev => ({
-                    ...prev,
-                    videoUrl: result.info.secure_url
-                }));
+                if (type === 'video') {
+                    setFormData(prev => ({ ...prev, videoUrl: result.info.secure_url }));
+                } else {
+                    setFormData(prev => ({ ...prev, thumbnailUrl: result.info.secure_url }));
+                }
             }
         });
     };
@@ -101,7 +104,7 @@ export default function ExerciseLibraryPage() {
     };
 
     const resetForm = () => {
-        setFormData({ name: "", muscles: "", videoUrl: "", instructions: "" });
+        setFormData({ name: "", muscles: "", videoUrl: "", thumbnailUrl: "", instructions: "" });
         setEditingId(null);
     };
 
@@ -110,6 +113,7 @@ export default function ExerciseLibraryPage() {
             name: ex.name,
             muscles: ex.muscles || "",
             videoUrl: ex.videoUrl || "",
+            thumbnailUrl: ex.thumbnailUrl || "",
             instructions: ex.instructions || ""
         });
         setEditingId(ex.id);
@@ -160,7 +164,7 @@ export default function ExerciseLibraryPage() {
                         <p className="text-sm font-black text-zinc-400 uppercase tracking-widest">Carregando Biblioteca...</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-20">
                         {filteredExercises.length === 0 ? (
                             <div className="col-span-full py-12 text-center text-zinc-500 bg-white rounded-3xl border-2 border-dashed border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
                                 <Dumbbell className="mx-auto h-12 w-12 text-zinc-300 mb-4" />
@@ -169,17 +173,45 @@ export default function ExerciseLibraryPage() {
                             </div>
                         ) : (
                             filteredExercises.map((ex) => (
-                                <div key={ex.id} className="group relative rounded-3xl bg-white p-4 shadow-sm ring-1 ring-zinc-200 transition-all hover:shadow-md dark:bg-zinc-900 dark:ring-zinc-800">
-                                    <div className="aspect-video w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-4">
+                                <div
+                                    key={ex.id}
+                                    className="group relative rounded-3xl bg-white p-4 shadow-sm ring-1 ring-zinc-200 transition-all hover:shadow-md dark:bg-zinc-900 dark:ring-zinc-800"
+                                    onMouseEnter={() => setHoveredId(ex.id)}
+                                    onMouseLeave={() => setHoveredId(null)}
+                                >
+                                    <div className="aspect-[4/3] w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-4">
                                         {ex.videoUrl ? (
-                                            <video
-                                                src={ex.videoUrl}
-                                                className="h-full w-full object-cover"
-                                                autoPlay
-                                                muted
-                                                loop
-                                                playsInline
-                                            />
+                                            <>
+                                                {hoveredId === ex.id ? (
+                                                    <video
+                                                        src={ex.videoUrl}
+                                                        className="h-full w-full object-cover object-top animate-fade-in"
+                                                        autoPlay
+                                                        muted
+                                                        loop
+                                                        playsInline
+                                                    />
+                                                ) : (
+                                                    <div className="h-full w-full relative">
+                                                        {ex.thumbnailUrl ? (
+                                                            <img
+                                                                src={ex.thumbnailUrl}
+                                                                alt={ex.name}
+                                                                className="h-full w-full object-cover object-top"
+                                                            />
+                                                        ) : (
+                                                            <div className="h-full w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800">
+                                                                <Play className="text-zinc-300" size={32} />
+                                                            </div>
+                                                        )}
+                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/5">
+                                                            <div className="p-3 bg-white/20 backdrop-blur-md rounded-full">
+                                                                <Play className="text-white fill-white ml-0.5" size={24} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
                                         ) : (
                                             <div className="h-full w-full flex items-center justify-center text-zinc-400">
                                                 <Play size={32} />
@@ -213,78 +245,104 @@ export default function ExerciseLibraryPage() {
             </div>
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 animate-slide-up custom-scrollbar">
-                        <header className="flex items-center justify-between mb-6">
+                    <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] bg-white p-8 shadow-2xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 animate-slide-up custom-scrollbar">
+                        <header className="flex items-center justify-between mb-8">
                             <div>
-                                <h2 className="text-xl font-bold">{editingId ? "Editar Exercício" : "Novo Exercício"}</h2>
-                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Demonstração visual</p>
+                                <p className="text-[10px] text-brand-primary font-black uppercase tracking-[0.2em] mb-1">Editor de Exercícios</p>
+                                <h2 className="text-2xl font-black text-zinc-900 dark:text-white">{editingId ? "Editar Exercício" : "Novo Exercício"}</h2>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-2 rounded-xl text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
-                                <X size={20} />
+                            <button onClick={() => setIsModalOpen(false)} className="p-3 rounded-2xl text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+                                <X size={24} />
                             </button>
                         </header>
 
-                        <form onSubmit={handleSave} className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-xs font-black text-zinc-400 uppercase ml-1">Nome do Exercício</label>
-                                <input
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold"
-                                    placeholder="Ex: Agachamento Livre"
-                                    required
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black text-zinc-400 uppercase ml-1">Músculos / Grupamento</label>
-                                <input
-                                    value={formData.muscles}
-                                    onChange={(e) => setFormData({ ...formData, muscles: e.target.value })}
-                                    className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold"
-                                    placeholder="Ex: Quadríceps, Glúteos"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black text-zinc-400 uppercase ml-1">Como executar (Instruções)</label>
-                                <textarea
-                                    value={formData.instructions}
-                                    onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-                                    className="w-full h-32 rounded-2xl bg-zinc-50 border-none px-4 py-3.5 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold resize-none"
-                                    placeholder="Descreva a técnica correta, postura e dicas de segurança..."
-                                />
+                        <form onSubmit={handleSave} className="space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Identificação</label>
+                                    <input
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full rounded-2xl bg-zinc-50 border-none px-5 py-4 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold"
+                                        placeholder="Abdominal máquina"
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Grupamento Muscular</label>
+                                    <input
+                                        value={formData.muscles}
+                                        onChange={(e) => setFormData({ ...formData, muscles: e.target.value })}
+                                        className="w-full rounded-2xl bg-zinc-50 border-none px-5 py-4 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold"
+                                        placeholder="Core"
+                                    />
+                                </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-black text-zinc-400 uppercase ml-1">Vídeo Demonstrativo</label>
-                                <div
-                                    onClick={handleVideoUpload}
-                                    className="w-full aspect-video rounded-2xl bg-zinc-50 dark:bg-zinc-800 border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center gap-3 group hover:border-brand-primary transition-all cursor-pointer overflow-hidden relative"
-                                >
-                                    {formData.videoUrl ? (
-                                        <>
-                                            <video src={formData.videoUrl} className="h-full w-full object-cover" />
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                <p className="text-white text-xs font-black uppercase">Alterar Vídeo</p>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Video className="text-zinc-300 group-hover:text-brand-primary transition-colors" size={48} />
-                                            <div className="text-center">
-                                                <p className="text-xs font-black text-zinc-500 uppercase">Clique para Upload HD</p>
-                                                <p className="text-[10px] text-zinc-400 mt-1">MP4, MOV ou WebM (Max 50MB)</p>
-                                            </div>
-                                        </>
-                                    )}
+                                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Técnica de Execução</label>
+                                <textarea
+                                    value={formData.instructions}
+                                    onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+                                    className="w-full h-32 rounded-2xl bg-zinc-50 border-none px-5 py-4 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 outline-none font-bold resize-none"
+                                    placeholder="Nível: Básico&#10;Equipamento: Máquina&#10;Músculos: Reto abdominal&#10;Técnica: Evitar puxar pescoço"
+                                />
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Mídia Demonstrativa</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.1em] text-zinc-400">Vídeo (Recomendado)</label>
+                                        <div
+                                            onClick={() => handleUpload('video')}
+                                            className="w-full aspect-video rounded-3xl bg-zinc-50 dark:bg-zinc-800 border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center gap-3 group hover:border-brand-primary transition-all cursor-pointer overflow-hidden relative"
+                                        >
+                                            {formData.videoUrl ? (
+                                                <>
+                                                    <video src={formData.videoUrl} className="h-full w-full object-cover" />
+                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                        <p className="text-white text-[10px] font-black uppercase">Alterar Vídeo</p>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Video className="text-zinc-300 group-hover:text-brand-primary transition-colors" size={32} />
+                                                    <p className="text-[10px] font-black text-zinc-500 uppercase">Upload Vídeo</p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.1em] text-zinc-400">Capa / Imagem</label>
+                                        <div
+                                            onClick={() => handleUpload('image')}
+                                            className="w-full aspect-video rounded-3xl bg-zinc-50 dark:bg-zinc-800 border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center gap-3 group hover:border-brand-primary transition-all cursor-pointer overflow-hidden relative"
+                                        >
+                                            {formData.thumbnailUrl ? (
+                                                <>
+                                                    <img src={formData.thumbnailUrl} className="h-full w-full object-cover" />
+                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                        <p className="text-white text-[10px] font-black uppercase">Alterar Capa</p>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <ImageIcon className="text-zinc-300 group-hover:text-brand-primary transition-colors" size={32} />
+                                                    <p className="text-[10px] font-black text-zinc-500 uppercase">Upload Capa</p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={isSaving}
-                                className="w-full rounded-2xl premium-gradient py-4 font-black text-white shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-4 disabled:opacity-50"
+                                className="w-full rounded-2xl bg-[#3B82F6] hover:bg-brand-primary py-5 font-black text-white shadow-xl transition-all hover:scale-[1.01] active:scale-95 mt-4 disabled:opacity-50 text-sm uppercase tracking-widest"
                             >
-                                {isSaving ? "SALVANDO..." : editingId ? "ATUALIZAR EXERCÍCIO" : "SALVAR EXERCÍCIO"}
+                                {isSaving ? "SALVANDO..." : "SALVAR ALTERAÇÕES"}
                             </button>
                         </form>
                     </div>
