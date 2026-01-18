@@ -185,16 +185,16 @@ export default function ExerciseLibraryPage() {
                                                 <Play size={32} />
                                             </div>
                                         )}
-                                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="absolute top-2 right-2 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                             <button
                                                 onClick={() => handleEdit(ex)}
-                                                className="p-2 bg-white/90 dark:bg-zinc-800/90 rounded-xl text-zinc-600 dark:text-zinc-300 hover:text-brand-primary"
+                                                className="p-2 bg-white/90 dark:bg-zinc-800/90 rounded-xl text-zinc-600 dark:text-zinc-300 hover:text-brand-primary shadow-lg"
                                             >
                                                 <Edit2 size={16} />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(ex.id, ex.name)}
-                                                className="p-2 bg-white/90 dark:bg-zinc-800/90 rounded-xl text-zinc-600 dark:text-zinc-300 hover:text-red-500"
+                                                className="p-2 bg-white/90 dark:bg-zinc-800/90 rounded-xl text-zinc-600 dark:text-zinc-300 hover:text-red-500 shadow-lg"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
