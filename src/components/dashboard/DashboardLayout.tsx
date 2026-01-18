@@ -30,6 +30,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     { name: "Painel Treinador", href: "/dashboard", icon: "📊" },
                     { name: "Alunos", href: "/dashboard/alunos", icon: "👥" },
                     { name: "Planilhas", href: "/dashboard/planilhas", icon: "📝" },
+                    { name: "Exercícios", href: "/dashboard/nutri/exercicios", icon: "🏋️‍♂️" },
                     { name: "Testes", href: "/dashboard/testes", icon: "🧪" },
                 ]
             },
