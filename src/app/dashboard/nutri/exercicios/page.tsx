@@ -187,7 +187,7 @@ export default function ExerciseLibraryPage() {
                                     onMouseEnter={() => setHoveredId(ex.id)}
                                     onMouseLeave={() => setHoveredId(null)}
                                 >
-                                    <div className="aspect-[4/5] w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-4">
+                                    <div className="aspect-square w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-4">
                                         {ex.videoUrl ? (
                                             <>
                                                 {hoveredId === ex.id ? (
