@@ -183,11 +183,11 @@ export default function ExerciseLibraryPage() {
                             filteredExercises.map((ex) => (
                                 <div
                                     key={ex.id}
-                                    className="group relative rounded-2xl bg-white p-3 shadow-sm ring-1 ring-zinc-200 transition-all hover:shadow-md dark:bg-zinc-900 dark:ring-zinc-800"
+                                    className="group relative aspect-square rounded-2xl bg-white p-3 shadow-sm ring-1 ring-zinc-200 transition-all hover:shadow-md dark:bg-zinc-900 dark:ring-zinc-800 flex flex-col"
                                     onMouseEnter={() => setHoveredId(ex.id)}
                                     onMouseLeave={() => setHoveredId(null)}
                                 >
-                                    <div className="aspect-square w-full rounded-xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-2.5">
+                                    <div className="aspect-[4/3] w-full rounded-xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative mb-auto shadow-inner">
                                         {ex.videoUrl ? (
                                             <>
                                                 {hoveredId === ex.id ? (
@@ -209,12 +209,12 @@ export default function ExerciseLibraryPage() {
                                                             />
                                                         ) : (
                                                             <div className="h-full w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800">
-                                                                <Play className="text-zinc-300" size={28} />
+                                                                <Play className="text-zinc-300" size={24} />
                                                             </div>
                                                         )}
                                                         <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                                                            <div className="p-2.5 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30">
-                                                                <Play className="text-white fill-white ml-0.5" size={20} />
+                                                            <div className="p-2 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30">
+                                                                <Play className="text-white fill-white ml-0.5" size={18} />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -222,7 +222,7 @@ export default function ExerciseLibraryPage() {
                                             </>
                                         ) : (
                                             <div className="h-full w-full flex items-center justify-center text-zinc-400">
-                                                <Play size={28} />
+                                                <Play size={24} />
                                             </div>
                                         )}
                                         <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
@@ -230,20 +230,22 @@ export default function ExerciseLibraryPage() {
                                                 onClick={() => handleEdit(ex)}
                                                 className="p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg text-zinc-600 dark:text-zinc-300 hover:text-brand-primary shadow-lg"
                                             >
-                                                <Edit2 size={14} />
+                                                <Edit2 size={12} />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(ex.id, ex.name)}
                                                 className="p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg text-zinc-600 dark:text-zinc-300 hover:text-red-500 shadow-lg"
                                             >
-                                                <Trash2 size={14} />
+                                                <Trash2 size={12} />
                                             </button>
                                         </div>
                                     </div>
-                                    <h3 className="text-[13px] font-bold text-zinc-900 dark:text-white mb-0 line-clamp-1">{ex.name}</h3>
-                                    <p className="text-[9px] text-zinc-500 uppercase font-black tracking-wider text-brand-primary">
-                                        {ex.muscles || "Geral"}
-                                    </p>
+                                    <div className="pt-2">
+                                        <h3 className="text-[11px] font-bold text-zinc-900 dark:text-white leading-tight line-clamp-2">{ex.name}</h3>
+                                        <p className="text-[8px] text-zinc-400 uppercase font-black tracking-wider mt-0.5">
+                                            {ex.muscles || "Geral"}
+                                        </p>
+                                    </div>
                                 </div>
                             ))
                         )}

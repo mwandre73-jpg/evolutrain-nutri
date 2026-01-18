@@ -121,10 +121,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                 )}
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="truncate text-[13px] font-semibold text-zinc-900 dark:text-white">
+                                <p className="truncate text-[12px] font-semibold text-zinc-900 dark:text-white">
                                     {session?.user?.name || "Usuário"}
                                 </p>
-                                <p className="truncate text-[10px] text-zinc-500">
+                                <p className="text-[9px] text-zinc-500 leading-none break-all">
                                     {session?.user?.email}
                                 </p>
                             </div>
@@ -158,8 +158,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     </button>
                 </header>
 
-                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:px-16 lg:py-8">
-                    <div className="max-w-7xl mx-auto">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:px-8 lg:py-8">
+                    <div className="w-full">
                         {children}
                     </div>
                 </main>
