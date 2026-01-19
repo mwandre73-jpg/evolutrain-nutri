@@ -9,9 +9,11 @@ export async function saveFitnessMetric(data: {
     category?: string;
     testType: string;
     exercise?: string;
+    name?: string;
     rawResult: number;
     calculatedVo2?: number;
     calculatedVmax?: number;
+    caloriesBurned?: number;
 }) {
     try {
         const session = await getServerSession(authOptions);
@@ -20,16 +22,18 @@ export async function saveFitnessMetric(data: {
             throw new Error("Unauthorized");
         }
 
-        const metric = await prisma.fitnessMetrics.create({
+        const metric = await (prisma.fitnessMetrics as any).create({
             data: {
                 id: `metric_${Date.now()}`,
                 athleteProfileId: data.athleteProfileId,
                 category: data.category || "AEROBIC",
                 testType: data.testType,
                 exercise: data.exercise,
+                name: data.name,
                 rawResult: data.rawResult,
                 calculatedVo2: data.calculatedVo2 ?? null,
                 calculatedVmax: data.calculatedVmax ?? null,
+                caloriesBurned: data.caloriesBurned ?? null,
             }
         });
 
@@ -53,6 +57,7 @@ export async function saveAthleteResultAction(data: {
     distance: number; // metros
     timeSeconds: number; // segundos
     name?: string;
+    caloriesBurned?: number;
 }) {
     try {
         const session = await getServerSession(authOptions);
@@ -80,16 +85,18 @@ export async function saveAthleteResultAction(data: {
         // VO2 = Vmax * 3.57
         const calculatedVo2 = speedKmh * 3.57;
 
-        const metric = await prisma.fitnessMetrics.create({
+        const metric = await (prisma.fitnessMetrics as any).create({
             data: {
                 id: `race_${Date.now()}`,
                 athleteProfileId: athlete.id,
                 category: "RACE",
                 testType: "RACE",
                 exercise: data.name || `${data.distance}m`,
+                name: data.name,
                 rawResult: data.timeSeconds, // Guardamos o tempo em segundos no rawResult
                 calculatedVo2: calculatedVo2,
                 calculatedVmax: speedKmh,
+                caloriesBurned: data.caloriesBurned ?? null,
                 date: new Date(data.date + 'T12:00:00'), // Normalização midday
             }
         });
@@ -105,6 +112,7 @@ export async function saveStrengthPRAction(data: {
     date: string;
     exercise: string;
     weight: number;
+    caloriesBurned?: number;
 }) {
     try {
         const session = await getServerSession(authOptions);
@@ -121,7 +129,7 @@ export async function saveStrengthPRAction(data: {
             throw new Error("Perfil de atleta não encontrado.");
         }
 
-        const metric = await prisma.fitnessMetrics.create({
+        const metric = await (prisma.fitnessMetrics as any).create({
             data: {
                 id: `strength_${Date.now()}`,
                 athleteProfileId: athlete.id,
@@ -129,6 +137,7 @@ export async function saveStrengthPRAction(data: {
                 testType: "PR",
                 exercise: data.exercise,
                 rawResult: data.weight,
+                caloriesBurned: data.caloriesBurned ?? null,
                 date: new Date(data.date + 'T12:00:00'), // Normalização midday
             }
         });

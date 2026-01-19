@@ -9,7 +9,7 @@ import { kmhParaPace, calcularZonasDeRitmo } from "@/lib/calculos";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Calendar, X, MessageSquare, Check } from "lucide-react";
 import { markFeedbackAsReadAction } from "@/app/actions/workouts";
-import { getAthleteNutritionAction } from "@/app/actions/nutrition";
+import { getAthleteNutritionAction, saveMealLogAction } from "@/app/actions/nutrition";
 import { AthleteDashboardUnified } from "@/components/dashboard/AthleteDashboardUnified";
 
 export default function DashboardPage() {
@@ -25,6 +25,7 @@ export default function DashboardPage() {
     });
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [nutrition, setNutrition] = useState<any>(null);
+    const [isMealModalOpen, setIsMealModalOpen] = useState(false);
 
 
     // Modal state for Athlete Results
@@ -38,7 +39,8 @@ export default function DashboardPage() {
         seconds: 0,
         name: "",
         exercise: "",
-        weight: 0
+        weight: 0,
+        caloriesBurned: 0
     });
 
     const formatDateToBR = (dateStr: string) => {
@@ -262,6 +264,7 @@ export default function DashboardPage() {
                 nutrition={nutrition}
                 session={session}
                 onSaveResult={() => setIsModalOpen(true)}
+                onLogMeal={() => setIsMealModalOpen(true)}
                 onUpdateNutrition={async () => {
                     const res = await getAthleteNutritionAction();
                     if (res.success) setNutrition(res.data);
@@ -269,6 +272,18 @@ export default function DashboardPage() {
                 dateRange={dateRange}
                 onOpenDatePicker={() => setShowDatePicker(!showDatePicker)}
                 formatDateToBR={formatDateToBR}
+                isMealModalOpen={isMealModalOpen}
+                onCloseMealModal={() => setIsMealModalOpen(false)}
+                onSaveMeal={async (data) => {
+                    const res = await saveMealLogAction(data);
+                    if (res.success) {
+                        setIsMealModalOpen(false);
+                        const nutr = await getAthleteNutritionAction();
+                        if (nutr.success) setNutrition(nutr.data);
+                    } else {
+                        alert(res.error || "Erro ao salvar refeição");
+                    }
+                }}
             />
 
             {/* Modal de Resultado de Prova */}
@@ -310,13 +325,15 @@ export default function DashboardPage() {
                                     date: resultData.date,
                                     distance: resultData.distance,
                                     timeSeconds: totalSeconds,
-                                    name: resultData.name
+                                    name: resultData.name,
+                                    caloriesBurned: resultData.caloriesBurned
                                 });
                             } else {
                                 res = await saveStrengthPRAction({
                                     date: resultData.date,
                                     exercise: resultData.exercise,
-                                    weight: resultData.weight
+                                    weight: resultData.weight,
+                                    caloriesBurned: resultData.caloriesBurned
                                 });
                             }
 
@@ -444,6 +461,19 @@ export default function DashboardPage() {
                                     </div>
                                 </>
                             )}
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-zinc-600">Calorias Gastas (Opcional)</label>
+                                <input
+                                    type="number"
+                                    placeholder="Ex: 350"
+                                    value={resultData.caloriesBurned}
+                                    onChange={e => setResultData({ ...resultData, caloriesBurned: Number(e.target.value) })}
+                                    className="w-full rounded-2xl bg-zinc-50 border-none px-4 py-3 focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800"
+                                    min={0}
+                                />
+                                <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Isso ajudará no seu balanço nutricional diário</p>
+                            </div>
 
                             <button
                                 type="submit"

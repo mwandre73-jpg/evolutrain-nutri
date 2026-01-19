@@ -11,19 +11,25 @@ import {
     Plus,
     Flame,
     Target,
-    ChevronRight
+    ChevronRight,
+    Utensils
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { MealLogModal } from "./MealLogModal";
 
 interface AthleteDashboardUnifiedProps {
     profile: any;
     nutrition: any;
     session: any;
     onSaveResult: () => void;
+    onLogMeal: () => void;
     onUpdateNutrition: () => void;
     dateRange: any;
     onOpenDatePicker: () => void;
     formatDateToBR: (date: string) => string;
+    isMealModalOpen: boolean;
+    onCloseMealModal: () => void;
+    onSaveMeal: (data: any) => Promise<void>;
 }
 
 export const AthleteDashboardUnified: React.FC<AthleteDashboardUnifiedProps> = ({
@@ -31,10 +37,14 @@ export const AthleteDashboardUnified: React.FC<AthleteDashboardUnifiedProps> = (
     nutrition,
     session,
     onSaveResult,
+    onLogMeal,
     onUpdateNutrition,
     dateRange,
     onOpenDatePicker,
-    formatDateToBR
+    formatDateToBR,
+    isMealModalOpen,
+    onCloseMealModal,
+    onSaveMeal
 }) => {
     return (
         <div className="max-w-4xl mx-auto space-y-8 pb-32 animate-slide-up">
@@ -48,29 +58,63 @@ export const AthleteDashboardUnified: React.FC<AthleteDashboardUnifiedProps> = (
                 </p>
             </header>
 
-            {/* Nutrition Overview Cards */}
-            <div className="grid gap-6 sm:grid-cols-2">
-                <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Target className="w-4 h-4 text-rose-500" />
-                        <h3 className="text-xs font-bold uppercase text-zinc-400 tracking-wider">Metas Nutricionais</h3>
+            {/* Nutrition Overview */}
+            <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h3 className="text-lg font-black italic uppercase tracking-tight">Status Nutricional</h3>
+                        <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest mt-1">Metas Diárias de Macros</p>
                     </div>
-                    <MacroProgressRings
-                        proteins={{ current: nutrition?.current?.proteins || 0, target: nutrition?.goal?.targetProteins || 150 }}
-                        carbs={{ current: nutrition?.current?.carbs || 0, target: nutrition?.goal?.targetCarbs || 200 }}
-                        fats={{ current: nutrition?.current?.fats || 0, target: nutrition?.goal?.targetFats || 60 }}
-                    />
-                    <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
-                        <p className="text-xs text-zinc-500">CONSUMIDO: <span className="font-bold text-zinc-900 dark:text-white">{nutrition?.current?.calories || 0} kcal</span></p>
-                        <p className="text-xs text-zinc-500">META: <span className="font-bold text-zinc-900 dark:text-white">{nutrition?.goal?.targetCalories || 2000} kcal</span></p>
-                    </div>
+                    <button
+                        onClick={onLogMeal}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 transition-all group border border-zinc-100 dark:border-zinc-700"
+                    >
+                        <Utensils className="w-4 h-4 text-brand-primary group-hover:scale-110 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Lançar Refeição</span>
+                    </button>
                 </div>
 
-                <WaterTracker
-                    current={nutrition?.current?.water || 0}
-                    target={nutrition?.goal?.targetWater || 2.5}
-                    onUpdate={onUpdateNutrition}
-                />
+                <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-12">
+                    {/* Summary of Balance */}
+                    <div className="flex-shrink-0 w-full md:w-32 flex flex-col items-center justify-center p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700">
+                        <div className="text-[10px] font-black uppercase text-zinc-400 mb-1">Balanço</div>
+                        <div className="text-2xl font-black text-brand-primary">{nutrition?.balance || 0}</div>
+                        <div className="text-[8px] font-bold text-zinc-400 uppercase tracking-tighter">KCAL NET</div>
+                        <div className="w-full h-px bg-zinc-200 dark:bg-zinc-700 my-3" />
+                        <div className="flex flex-col gap-1 w-full text-[9px] font-bold uppercase">
+                            <div className="flex justify-between items-center text-zinc-500">
+                                <span>Ingesta:</span>
+                                <span className="text-zinc-900 dark:text-white">{nutrition?.current?.calories || 0}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-rose-500">
+                                <span>Gasto:</span>
+                                <span>-{nutrition?.current?.workoutCalories || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div>
+                            <div className="flex items-center gap-2 mb-2">
+                                <Target className="w-4 h-4 text-rose-500" />
+                                <h3 className="text-[10px] font-black uppercase text-zinc-400 tracking-[0.15em]">Anéis de Progresso</h3>
+                            </div>
+                            <MacroProgressRings
+                                proteins={{ current: nutrition?.current?.proteins || 0, target: nutrition?.goal?.targetProteins || 150 }}
+                                carbs={{ current: nutrition?.current?.carbs || 0, target: nutrition?.goal?.targetCarbs || 200 }}
+                                fats={{ current: nutrition?.current?.fats || 0, target: nutrition?.goal?.targetFats || 60 }}
+                            />
+                        </div>
+
+                        <div className="flex flex-col justify-center">
+                            <WaterTracker
+                                current={nutrition?.current?.water || 0}
+                                target={nutrition?.goal?.targetWater || 2.5}
+                                onUpdate={onUpdateNutrition}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Workout of the Day */}
@@ -234,6 +278,12 @@ export const AthleteDashboardUnified: React.FC<AthleteDashboardUnifiedProps> = (
                     REGISTRAR
                 </motion.button>
             </div>
+
+            <MealLogModal
+                isOpen={isMealModalOpen}
+                onClose={onCloseMealModal}
+                onSave={onSaveMeal}
+            />
         </div>
     );
 };

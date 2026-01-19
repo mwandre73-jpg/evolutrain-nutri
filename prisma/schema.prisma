@@ -60,9 +60,11 @@ model FitnessMetrics {
   category         String         @default("AEROBIC")
   testType         String
   exercise         String?
+  name             String?
   rawResult        Float
   calculatedVo2    Float?
   calculatedVmax   Float?
+  caloriesBurned   Int?
   athlete          AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade, map: "FitnessMetrics_athleteProfileId_fkey")
 
   @@index([athleteProfileId], map: "FitnessMetrics_athleteProfileId_fkey")
@@ -302,6 +304,7 @@ model MealLog {
   id               String         @id @default(uuid())
   athleteProfileId String
   date             DateTime       @default(now())
+  mealType         String?
   description      String?        @db.Text
   calories         Int?
   proteins         Int?
