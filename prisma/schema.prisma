@@ -45,6 +45,9 @@ model AthleteProfile {
   invitations  Invitation[]
   workouts     Workouts[]
   anamnesis    Anamnesis[]
+  nutritionGoal NutritionGoal?
+  waterLogs    WaterLog[]
+  mealLogs     MealLog[]
 
   @@index([coachId], map: "AthleteProfile_coachId_fkey")
   @@map("athleteprofile")
@@ -265,6 +268,51 @@ model WorkoutTemplate {
   
   @@index([coachId])
   @@map("workouttemplate")
+}
+
+model NutritionGoal {
+  id               String         @id @default(uuid())
+  athleteProfileId String         @unique
+  targetCalories   Int            @default(2000)
+  targetProteins   Int            @default(150)
+  targetCarbs      Int            @default(200)
+  targetFats       Int            @default(60)
+  targetWater      Float          @default(2.5) // Litros
+  updatedAt        DateTime       @updatedAt
+
+  athlete          AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade)
+
+  @@index([athleteProfileId])
+  @@map("nutritiongoal")
+}
+
+model WaterLog {
+  id               String         @id @default(uuid())
+  athleteProfileId String
+  date             DateTime       @default(now())
+  amount           Float          // Litros consumidos
+  
+  athlete          AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade)
+
+  @@index([athleteProfileId])
+  @@map("waterlog")
+}
+
+model MealLog {
+  id               String         @id @default(uuid())
+  athleteProfileId String
+  date             DateTime       @default(now())
+  description      String?        @db.Text
+  calories         Int?
+  proteins         Int?
+  carbs            Int?
+  fats             Int?
+  photoUrl         String?        @db.Text
+  
+  athlete          AthleteProfile @relation(fields: [athleteProfileId], references: [id], onDelete: Cascade)
+
+  @@index([athleteProfileId])
+  @@map("meallog")
 }
 
 enum UserRole {

@@ -10,6 +10,8 @@ import { getStravaAuthUrl, syncStravaActivitiesAction, disconnectStravaAction } 
 import { useSearchParams } from "next/navigation";
 import { RefreshCw, CheckCircle2, AlertCircle, Unlink, Calendar, X, MessageSquare, Check } from "lucide-react";
 import { markFeedbackAsReadAction } from "@/app/actions/workouts";
+import { getAthleteNutritionAction } from "@/app/actions/nutrition";
+import { AthleteDashboardUnified } from "@/components/dashboard/AthleteDashboardUnified";
 
 export default function DashboardPage() {
     const { data: session } = useSession();
@@ -25,6 +27,7 @@ export default function DashboardPage() {
         end: ""
     });
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [nutrition, setNutrition] = useState<any>(null);
 
     // Feedback do OAuth Strava
     useEffect(() => {
@@ -63,13 +66,21 @@ export default function DashboardPage() {
                 const data = await getCoachDashboardStatsAction();
                 setStats(data);
             } else if (session?.user) {
-                const data = await getStudentProfileAction(dateRange.start || undefined, dateRange.end || undefined);
-                setProfile(data);
+                const [profileData, nutritionData] = await Promise.all([
+                    getStudentProfileAction(dateRange.start || undefined, dateRange.end || undefined),
+                    getAthleteNutritionAction()
+                ]);
+
+                setProfile(profileData);
+                if (nutritionData.success) {
+                    setNutrition(nutritionData.data);
+                }
+
                 // Sync internal range with what server returned if not set
-                if (data?.weeklyProgress && !dateRange.start) {
+                if (profileData?.weeklyProgress && !dateRange.start) {
                     setDateRange({
-                        start: data.weeklyProgress.startDate,
-                        end: data.weeklyProgress.endDate
+                        start: profileData.weeklyProgress.startDate,
+                        end: profileData.weeklyProgress.endDate
                     });
                 }
             }
@@ -255,305 +266,52 @@ export default function DashboardPage() {
 
     // Dashboard do Atleta
     return (
-        <div className="space-y-8 animate-slide-up">
-            <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">
-                        Olá, <span className="text-gradient">{session?.user?.name || "Corredor"}</span>!
-                    </h1>
-                    <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                        Pronto para o treino de hoje?
-                    </p>
-                </div>
-                <div className="flex gap-3">
-                    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900">
-                        <p className="text-[10px] font-bold uppercase text-zinc-400">VO2 Máx</p>
-                        <p className="text-xl font-bold text-brand-primary">
-                            {profile?.vo2 ? `${profile.vo2.toFixed(1)} ml/kg` : "--"}
-                        </p>
-                    </div>
-                    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900">
-                        <p className="text-[10px] font-bold uppercase text-zinc-400">Ritmo Base</p>
-                        <p className="text-xl font-bold text-brand-secondary">
-                            {profile?.vmax ? `${kmhParaPace(profile.vmax)} min/km` : "--"}
-                        </p>
-                    </div>
-                </div>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 rounded-2xl premium-gradient px-6 py-4 font-bold text-white shadow-lg shadow-brand-primary/20 transition-all hover:scale-105 active:scale-95 sm:self-center"
-                >
-                    <span>➕</span> Registrar Resultado
-                </button>
-            </header>
+        <>
+            <AthleteDashboardUnified
+                profile={profile}
+                nutrition={nutrition}
+                session={session}
+                isSyncing={isSyncing}
+                syncResult={syncResult}
+                onSyncStrava={async () => {
+                    setIsSyncing(true);
+                    const res = await syncStravaActivitiesAction();
+                    if (res.success) {
+                        setSyncResult({ type: 'success', message: `${res.count} atividades sincronizadas!` });
+                        const [profileData, nutritionData] = await Promise.all([
+                            getStudentProfileAction(),
+                            getAthleteNutritionAction()
+                        ]);
+                        setProfile(profileData);
+                        if (nutritionData.success) setNutrition(nutritionData.data);
+                    } else {
+                        setSyncResult({ type: 'error', message: res.error || "Erro na sincronização" });
+                    }
+                    setIsSyncing(false);
+                }}
+                onDisconnectStrava={async () => {
+                    if (!confirm("Deseja realmente desconectar o Strava?")) return;
+                    const res = await disconnectStravaAction();
+                    if (res.success) {
+                        setSyncResult({ type: 'success', message: "Desconectado com sucesso" });
+                        const data = await getStudentProfileAction();
+                        setProfile(data);
+                    }
+                }}
+                onSaveResult={() => setIsModalOpen(true)}
+                onUpdateNutrition={async () => {
+                    const res = await getAthleteNutritionAction();
+                    if (res.success) setNutrition(res.data);
+                }}
+                onStravaAuth={async () => {
+                    const url = await getStravaAuthUrl();
+                    window.location.href = url;
+                }}
+                dateRange={dateRange}
+                onOpenDatePicker={() => setShowDatePicker(!showDatePicker)}
+                formatDateToBR={formatDateToBR}
+            />
 
-            <div className="grid gap-8 lg:grid-cols-3">
-                {/* Workout Card */}
-                <div className="lg:col-span-2 space-y-6">
-                    {profile?.todayWorkout ? (
-                        <div className="rounded-3xl premium-gradient p-8 text-white shadow-xl shadow-brand-primary/20">
-                            <div className="flex items-center justify-between">
-                                <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
-                                    {profile.todayWorkout.isPast ? "Treino Pendente" :
-                                        profile.todayWorkout.isFuture ? "Próximo Treino" : "Treino de Hoje"}
-                                </span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs font-medium text-white/60">{profile.todayWorkout.date}</span>
-                                    {profile.todayWorkout.completed && (
-                                        <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-md text-emerald-300">
-                                            Concluído
-                                        </span>
-                                    )}
-                                </div>
-                                <span className="text-2xl">⚡</span>
-                            </div>
-                            <h2 className="mt-6 text-2xl font-bold">{profile.todayWorkout.type}</h2>
-                            <p className="mt-2 text-white/80 line-clamp-2">
-                                {profile.todayWorkout.description}
-                            </p>
-                            <Link
-                                href={`/dashboard/planilhas/${profile.todayWorkout.id}`}
-                                className="mt-8 inline-block rounded-2xl bg-white px-8 py-4 font-bold text-brand-primary transition-all hover:scale-105 active:scale-95"
-                            >
-                                Ver Detalhes do Treino
-                            </Link>
-                        </div>
-                    ) : (
-                        <div className="rounded-3xl bg-zinc-100 dark:bg-zinc-800/50 p-8 text-center space-y-4 border-2 border-dashed border-zinc-200 dark:border-zinc-700">
-                            <div className="text-4xl">🧘‍♂️</div>
-                            <div>
-                                <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Dia de Descanso</h2>
-                                <p className="text-zinc-500 dark:text-zinc-400 mt-1">
-                                    Não há treino prescrito para hoje. Aproveite para recuperar suas energias!
-                                </p>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900">
-                        <h3 className="mb-6 text-lg font-bold">Minhas Zonas de Treino</h3>
-                        {zones.length > 0 ? (
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                {zones.map((zona, i) => (
-                                    <div key={i} className="flex items-center justify-between rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-800/50">
-                                        <span className="text-sm font-medium">{zona.label}</span>
-                                        <span className="font-mono font-bold text-zinc-600 dark:text-zinc-400">
-                                            {zona.paceMax} - {zona.paceMin} <span className="text-[10px] text-zinc-400">min/km</span>
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="p-8 text-center text-zinc-400 border-2 border-dashed border-zinc-100 rounded-2xl">
-                                Realize um teste aeróbico para calcular suas zonas.
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Histórico de Resultados */}
-                    <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-bold">Meus Últimos Resultados</h3>
-                            {profile?.recentRaces?.length > 0 && (
-                                <Link href="/dashboard/evolucao" className="text-sm font-bold text-brand-primary hover:underline">Ver tudo</Link>
-                            )}
-                        </div>
-                        {profile?.recentRaces?.length > 0 ? (
-                            <div className="space-y-4">
-                                {profile.recentRaces.map((race: any, i: number) => (
-                                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50">
-                                        <div>
-                                            <p className="font-bold text-zinc-900 dark:text-white line-clamp-1">{race.name || race.exercise}</p>
-                                            <p className="text-xs text-zinc-400">{race.date} • {race.category === 'STRENGTH' ? 'Musculação' : 'Corrida'}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            {race.category === 'STRENGTH' ? (
-                                                <p className="font-mono font-bold text-orange-500">{race.weight} kg</p>
-                                            ) : (
-                                                <>
-                                                    <div className="flex flex-col items-end">
-                                                        {race.distance > 0 && <span className="text-xs font-bold text-brand-primary mb-1">{race.distance.toFixed(2)} km</span>}
-                                                        <p className="font-mono font-bold text-zinc-500 text-sm leading-none">{race.time}</p>
-                                                    </div>
-                                                    <p className="text-[10px] text-zinc-400 uppercase font-bold mt-1">{race.pace} min/km</p>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="p-8 text-center text-zinc-400 border-2 border-dashed border-zinc-100 rounded-2xl">
-                                Você ainda não registrou nenhum resultado de prova ou teste.
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Sidebar Stats */}
-                <div className="space-y-6">
-                    <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-bold">Progresso Semanal</h3>
-                            <button
-                                onClick={() => setShowDatePicker(!showDatePicker)}
-                                className="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-500"
-                                title="Selecionar Período"
-                            >
-                                <Calendar className="w-5 h-5" />
-                            </button>
-                        </div>
-
-                        {showDatePicker && (
-                            <div className="mb-6 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 space-y-3 animate-in fade-in slide-in-from-top-2">
-                                <div className="flex items-center justify-between mb-1">
-                                    <p className="text-[10px] font-bold uppercase text-zinc-400">Personalizar Período</p>
-                                    <button
-                                        onClick={() => setDateRange({ start: "", end: "" })}
-                                        className="text-[10px] font-bold text-brand-primary hover:underline"
-                                    >
-                                        Resetar (Esta Semana)
-                                    </button>
-                                </div>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] text-zinc-500 ml-1">Início</label>
-                                        <input
-                                            type="date"
-                                            value={dateRange.start}
-                                            onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                                            className="w-full text-xs rounded-lg border-none bg-white dark:bg-zinc-900 p-2 focus:ring-1 focus:ring-brand-primary"
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] text-zinc-500 ml-1">Fim</label>
-                                        <input
-                                            type="date"
-                                            value={dateRange.end}
-                                            onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                                            className="w-full text-xs rounded-lg border-none bg-white dark:bg-zinc-900 p-2 focus:ring-1 focus:ring-brand-primary"
-                                        />
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => setShowDatePicker(false)}
-                                    className="w-full py-1 text-[10px] font-bold uppercase text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700 mt-2"
-                                >
-                                    Fechar
-                                </button>
-                            </div>
-                        )}
-
-                        <div className="space-y-4">
-                            <div>
-                                <div className="flex justify-between text-sm mb-1">
-                                    <span className="text-zinc-500">Corrida (km)</span>
-                                    <span className="font-bold text-brand-primary">
-                                        {profile?.weeklyProgress?.runningKm || 0} / {profile?.weeklyProgress?.runningGoal || 45}
-                                    </span>
-                                </div>
-                                <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800">
-                                    <div
-                                        className="h-full rounded-full bg-brand-primary transition-all duration-1000"
-                                        style={{ width: `${Math.min(100, ((profile?.weeklyProgress?.runningKm || 0) / (profile?.weeklyProgress?.runningGoal || 45)) * 100)}%` }}
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex justify-between text-sm mb-1">
-                                    <span className="text-zinc-500">Musculação</span>
-                                    <span className="font-bold text-brand-secondary">
-                                        {profile?.weeklyProgress?.strengthCount || 0} / {profile?.weeklyProgress?.strengthGoal || 3}
-                                    </span>
-                                </div>
-                                <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800">
-                                    <div
-                                        className="h-full rounded-full bg-brand-secondary transition-all duration-1000"
-                                        style={{ width: `${Math.min(100, ((profile?.weeklyProgress?.strengthCount || 0) / (profile?.weeklyProgress?.strengthGoal || 3)) * 100)}%` }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {(dateRange.start && dateRange.end) && (
-                            <p className="mt-4 text-[10px] text-center text-zinc-400 font-medium italic">
-                                Período: {formatDateToBR(dateRange.start)} - {formatDateToBR(dateRange.end)}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="rounded-3xl bg-zinc-900 p-8 text-white relative overflow-hidden">
-                        <div className="relative z-10">
-                            <p className="text-sm text-white/60">Integração Strava</p>
-                            {profile?.stravaConnected ? (
-                                <>
-                                    <h4 className="mt-2 font-bold flex items-center gap-2">
-                                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                                        Conectado ao Strava
-                                    </h4>
-                                    <div className="mt-6 space-y-3">
-                                        <button
-                                            onClick={async () => {
-                                                setIsSyncing(true);
-                                                const res = await syncStravaActivitiesAction();
-                                                if (res.success) {
-                                                    setSyncResult({ type: 'success', message: `${res.count} atividades sincronizadas!` });
-                                                    const data = await getStudentProfileAction();
-                                                    setProfile(data);
-                                                } else {
-                                                    setSyncResult({ type: 'error', message: res.error || "Erro na sincronização" });
-                                                }
-                                                setIsSyncing(false);
-                                            }}
-                                            disabled={isSyncing}
-                                            className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-primary py-3 text-sm font-bold transition-all hover:bg-brand-primary/90 disabled:opacity-50"
-                                        >
-                                            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                                            {isSyncing ? "Sincronizando..." : "Sincronizar Atividades"}
-                                        </button>
-                                        <button
-                                            onClick={async () => {
-                                                if (!confirm("Deseja realmente desconectar o Strava?")) return;
-                                                const res = await disconnectStravaAction();
-                                                if (res.success) {
-                                                    setSyncResult({ type: 'success', message: "Desconectado com sucesso" });
-                                                    const data = await getStudentProfileAction();
-                                                    setProfile(data);
-                                                }
-                                            }}
-                                            className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/10 py-3 text-sm font-bold transition-all hover:bg-white/5 text-white/40"
-                                        >
-                                            <Unlink className="w-4 h-4" />
-                                            Desconectar
-                                        </button>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <h4 className="mt-2 font-bold">Conecte seus dispositivos</h4>
-                                    <button
-                                        onClick={async () => {
-                                            const url = await getStravaAuthUrl();
-                                            window.location.href = url;
-                                        }}
-                                        className="mt-6 w-full rounded-xl premium-gradient py-3 text-sm font-bold transition-all hover:scale-105"
-                                    >
-                                        Conectar Strava
-                                    </button>
-                                </>
-                            )}
-
-                            {syncResult && (
-                                <div className={`mt-4 p-3 rounded-xl text-xs flex items-center gap-2 animate-in fade-in slide-in-from-top-2 ${syncResult.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
-                                    {syncResult.type === 'success' ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
-                                    {syncResult.message}
-                                </div>
-                            )}
-                        </div>
-                        {/* Background SVG or effect if wanted */}
-                    </div>
-                </div>
-            </div>
             {/* Modal de Resultado de Prova */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex justify-center p-4 backdrop-blur-sm bg-black/40 overflow-y-auto pt-10 sm:pt-24">
@@ -739,6 +497,6 @@ export default function DashboardPage() {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }
