@@ -6,9 +6,8 @@ import Link from "next/link";
 import { getStudentProfileAction, getCoachDashboardStatsAction } from "@/app/actions/athletes";
 import { saveAthleteResultAction, saveStrengthPRAction } from "@/app/actions/metrics";
 import { kmhParaPace, calcularZonasDeRitmo } from "@/lib/calculos";
-import { getStravaAuthUrl, syncStravaActivitiesAction, disconnectStravaAction } from "@/app/actions/strava";
 import { useSearchParams } from "next/navigation";
-import { RefreshCw, CheckCircle2, AlertCircle, Unlink, Calendar, X, MessageSquare, Check } from "lucide-react";
+import { CheckCircle2, Calendar, X, MessageSquare, Check } from "lucide-react";
 import { markFeedbackAsReadAction } from "@/app/actions/workouts";
 import { getAthleteNutritionAction } from "@/app/actions/nutrition";
 import { AthleteDashboardUnified } from "@/components/dashboard/AthleteDashboardUnified";
@@ -20,8 +19,6 @@ export default function DashboardPage() {
     const [profile, setProfile] = useState<any>(null);
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [isSyncing, setIsSyncing] = useState(false);
-    const [syncResult, setSyncResult] = useState<{ type: 'success' | 'error', message: string } | null>(null);
     const [dateRange, setDateRange] = useState({
         start: "", // Let server decide default initially
         end: ""
@@ -29,13 +26,6 @@ export default function DashboardPage() {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [nutrition, setNutrition] = useState<any>(null);
 
-    // Feedback do OAuth Strava
-    useEffect(() => {
-        const success = searchParams.get("strava_success");
-        const error = searchParams.get("strava_error");
-        if (success) setSyncResult({ type: 'success', message: "Strava conectado com sucesso!" });
-        if (error) setSyncResult({ type: 'error', message: `Erro ao conectar: ${error}` });
-    }, [searchParams]);
 
     // Modal state for Athlete Results
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -271,41 +261,10 @@ export default function DashboardPage() {
                 profile={profile}
                 nutrition={nutrition}
                 session={session}
-                isSyncing={isSyncing}
-                syncResult={syncResult}
-                onSyncStrava={async () => {
-                    setIsSyncing(true);
-                    const res = await syncStravaActivitiesAction();
-                    if (res.success) {
-                        setSyncResult({ type: 'success', message: `${res.count} atividades sincronizadas!` });
-                        const [profileData, nutritionData] = await Promise.all([
-                            getStudentProfileAction(),
-                            getAthleteNutritionAction()
-                        ]);
-                        setProfile(profileData);
-                        if (nutritionData.success) setNutrition(nutritionData.data);
-                    } else {
-                        setSyncResult({ type: 'error', message: res.error || "Erro na sincronização" });
-                    }
-                    setIsSyncing(false);
-                }}
-                onDisconnectStrava={async () => {
-                    if (!confirm("Deseja realmente desconectar o Strava?")) return;
-                    const res = await disconnectStravaAction();
-                    if (res.success) {
-                        setSyncResult({ type: 'success', message: "Desconectado com sucesso" });
-                        const data = await getStudentProfileAction();
-                        setProfile(data);
-                    }
-                }}
                 onSaveResult={() => setIsModalOpen(true)}
                 onUpdateNutrition={async () => {
                     const res = await getAthleteNutritionAction();
                     if (res.success) setNutrition(res.data);
-                }}
-                onStravaAuth={async () => {
-                    const url = await getStravaAuthUrl();
-                    window.location.href = url;
                 }}
                 dateRange={dateRange}
                 onOpenDatePicker={() => setShowDatePicker(!showDatePicker)}

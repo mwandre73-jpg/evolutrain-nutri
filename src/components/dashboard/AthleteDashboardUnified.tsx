@@ -7,10 +7,7 @@ import { WaterTracker } from "./WaterTracker";
 import { kmhParaPace } from "@/lib/calculos";
 import {
     Calendar,
-    RefreshCw,
     CheckCircle2,
-    AlertCircle,
-    Unlink,
     Plus,
     Flame,
     Target,
@@ -22,13 +19,8 @@ interface AthleteDashboardUnifiedProps {
     profile: any;
     nutrition: any;
     session: any;
-    isSyncing: boolean;
-    syncResult: any;
-    onSyncStrava: () => void;
-    onDisconnectStrava: () => void;
     onSaveResult: () => void;
     onUpdateNutrition: () => void;
-    onStravaAuth: () => void;
     dateRange: any;
     onOpenDatePicker: () => void;
     formatDateToBR: (date: string) => string;
@@ -38,13 +30,8 @@ export const AthleteDashboardUnified: React.FC<AthleteDashboardUnifiedProps> = (
     profile,
     nutrition,
     session,
-    isSyncing,
-    syncResult,
-    onSyncStrava,
-    onDisconnectStrava,
     onSaveResult,
     onUpdateNutrition,
-    onStravaAuth,
     dateRange,
     onOpenDatePicker,
     formatDateToBR
@@ -191,60 +178,6 @@ export const AthleteDashboardUnified: React.FC<AthleteDashboardUnifiedProps> = (
                                 />
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                {/* Strava Integration */}
-                <div className="rounded-3xl bg-zinc-900 p-8 text-white flex flex-col justify-between overflow-hidden relative">
-                    <div className="relative z-10">
-                        <div className="flex items-center justify-between mb-6">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Integração Strava</p>
-                            {profile?.stravaConnected && (
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    SYNC ON
-                                </div>
-                            )}
-                        </div>
-
-                        {profile?.stravaConnected ? (
-                            <div className="space-y-4">
-                                <button
-                                    onClick={onSyncStrava}
-                                    disabled={isSyncing}
-                                    className="w-full h-14 flex items-center justify-center gap-3 rounded-2xl bg-brand-primary font-black text-sm transition-all hover:bg-brand-primary/90 disabled:opacity-50"
-                                >
-                                    <RefreshCw className={`w-5 h-5 ${isSyncing ? 'animate-spin' : ''}`} />
-                                    {isSyncing ? "SINCRONIZANDO..." : "ATUALIZAR TREINOS"}
-                                </button>
-                                <button
-                                    onClick={onDisconnectStrava}
-                                    className="w-full py-3 text-[10px] font-black tracking-widest text-white/30 hover:text-white/60 transition-all uppercase"
-                                >
-                                    Desconectar Dispositivo
-                                </button>
-                            </div>
-                        ) : (
-                            <div>
-                                <h4 className="text-xl font-black mb-2">Conecte seus dispositivos</h4>
-                                <p className="text-sm text-white/50 mb-8 leading-relaxed">
-                                    Importe suas atividades automaticamente do Strava.
-                                </p>
-                                <button
-                                    onClick={onStravaAuth}
-                                    className="w-full h-14 flex items-center justify-center gap-3 rounded-2xl premium-gradient font-black text-sm transition-all hover:scale-[1.02]"
-                                >
-                                    Conectar Agora
-                                </button>
-                            </div>
-                        )}
-
-                        {syncResult && (
-                            <div className={`mt-4 p-4 rounded-2xl text-[11px] font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2 ${syncResult.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
-                                {syncResult.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-                                {syncResult.message}
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
